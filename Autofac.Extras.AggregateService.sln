@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Extras.AggregateService", "src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj", "{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Extras.Tests.AggregateService", "test\Autofac.Extras.Tests.AggregateService\Autofac.Extras.Tests.AggregateService.csproj", "{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Extras.AggregateService.Test", "test\Autofac.Extras.AggregateService.Test\Autofac.Extras.AggregateService.Test.csproj", "{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

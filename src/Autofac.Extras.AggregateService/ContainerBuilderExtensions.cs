@@ -24,8 +24,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Security;
-using Autofac;
 
 namespace Autofac.Extras.AggregateService
 {
@@ -34,31 +32,38 @@ namespace Autofac.Extras.AggregateService
     /// </summary>
     public static class ContainerBuilderExtensions
     {
-        ///<summary>
+        /// <summary>
         /// Register <typeparamref name="TInterface"/> as an aggregate service.
-        ///</summary>
-        ///<param name="builder">The container builder</param>
-        ///<typeparam name="TInterface">The interface type to register</typeparam>
+        /// </summary>
+        /// <param name="builder">The container builder</param>
+        /// <typeparam name="TInterface">The interface type to register</typeparam>
         /// <exception cref="ArgumentNullException">If <typeparamref name="TInterface"/> is null</exception>
         /// <exception cref="ArgumentException">If <typeparamref name="TInterface"/> is not an interface</exception>
-        [SecuritySafeCritical]
-        public static void RegisterAggregateService<TInterface>(this ContainerBuilder builder) where TInterface:class 
+        public static void RegisterAggregateService<TInterface>(this ContainerBuilder builder)
+            where TInterface : class
         {
-            builder.RegisterAggregateService(typeof (TInterface));
+            builder.RegisterAggregateService(typeof(TInterface));
         }
 
-        ///<summary>
+        /// <summary>
         /// Register <paramref name="interfaceType"/> as an aggregate service.
-        ///</summary>
-        ///<param name="builder">The container builder</param>
-        ///<param name="interfaceType">The interface type to register</param>
+        /// </summary>
+        /// <param name="builder">The container builder</param>
+        /// <param name="interfaceType">The interface type to register</param>
         /// <exception cref="ArgumentNullException">If <paramref name="interfaceType"/> is null</exception>
         /// <exception cref="ArgumentException">If <paramref name="interfaceType"/> is not an interface</exception>
-        [SecuritySafeCritical]
         public static void RegisterAggregateService(this ContainerBuilder builder, Type interfaceType)
         {
-            if (interfaceType == null) throw new ArgumentNullException("interfaceType");
-            if (!interfaceType.IsInterface) throw new ArgumentException("Aggregate service type must be an interface", "interfaceType");
+            if (interfaceType == null)
+            {
+                throw new ArgumentNullException("interfaceType");
+            }
+
+            if (!interfaceType.IsInterface)
+            {
+                throw new ArgumentException("Aggregate service type must be an interface", "interfaceType");
+            }
+
             builder.Register(c => AggregateServiceGenerator.CreateInstance(interfaceType, c.Resolve<IComponentContext>()))
                 .As(interfaceType)
                 .InstancePerDependency();
