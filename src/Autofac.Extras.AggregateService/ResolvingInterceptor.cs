@@ -45,8 +45,10 @@ namespace Autofac.Extras.AggregateService
         private readonly Dictionary<MethodInfo, Action<IInvocation>> _invocationMap;
 
         /// <summary>
-        /// Initialize <see cref="ResolvingInterceptor"/> with an interface type and a component context.
+        /// Initializes a new instance of the <see cref="ResolvingInterceptor"/> class.
         /// </summary>
+        /// <param name="interfaceType">Type of the interface to intercept.</param>
+        /// <param name="context">The resolution context.</param>
         public ResolvingInterceptor(Type interfaceType, IComponentContext context)
         {
             _context = context;
@@ -152,7 +154,7 @@ namespace Autofac.Extras.AggregateService
 
                 // Methods without parameters
                 var methodWithoutParams = this.GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic);
-                var methodWithoutParamsDelegate = (Action<IInvocation>)Delegate.CreateDelegate(typeof(Action<IInvocation>), this, methodWithoutParams);
+                var methodWithoutParamsDelegate = (Action<IInvocation>)methodWithoutParams.CreateDelegate(typeof(Action<IInvocation>), this);
                 methodMap.Add(method, methodWithoutParamsDelegate);
             }
 
