@@ -35,10 +35,10 @@
       "Autofac Contributors"
     ],
     "projectUrl": "http://autofac.org",
-    "releaseNotes": "Release notes are at https://github.com/autofac/Autofac.Extras.AggregateServices/releases",
+    "releaseNotes": "Release notes are at https://github.com/autofac/Autofac.Extras.AggregateService/releases",
     "repository": {
       "type": "git",
-      "url": "https://github.com/autofac/Autofac.Extras.AggregateServices"
+      "url": "https://github.com/autofac/Autofac.Extras.AggregateService"
     },
     "requireLicenseAcceptance": false,
     "summary": "Aggregate services are sets of dependencies you can treat as a single dependency. This extension enables support for aggregate dependencies in Autofac.",
