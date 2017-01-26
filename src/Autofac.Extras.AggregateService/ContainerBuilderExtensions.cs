@@ -24,6 +24,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Reflection;
 
 namespace Autofac.Extras.AggregateService
 {
@@ -59,7 +60,7 @@ namespace Autofac.Extras.AggregateService
                 throw new ArgumentNullException("interfaceType");
             }
 
-            if (!interfaceType.IsInterface)
+            if (!interfaceType.GetTypeInfo().IsInterface)
             {
                 throw new ArgumentException("Aggregate service type must be an interface", "interfaceType");
             }

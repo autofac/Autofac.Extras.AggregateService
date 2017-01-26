@@ -7,9 +7,12 @@ namespace Autofac.Extras.AggregateService.Test
     /// </summary>
     public interface IMyService
     {
-        int SomeIntValue { get; }
-        string SomeStringValue { get; }
         DateTime SomeDateValue { get; }
+
         ISomeDependency SomeDependency { get; }
+
+        int SomeIntValue { get; }
+
+        string SomeStringValue { get; }
     }
 }

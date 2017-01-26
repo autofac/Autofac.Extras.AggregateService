@@ -24,6 +24,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Reflection;
 using Castle.DynamicProxy;
 
 namespace Autofac.Extras.AggregateService
@@ -66,7 +67,7 @@ namespace Autofac.Extras.AggregateService
                 throw new ArgumentNullException("interfaceType");
             }
 
-            if (!interfaceType.IsInterface)
+            if (!interfaceType.GetTypeInfo().IsInterface)
             {
                 throw new ArgumentException("Type must be an interface", "interfaceType");
             }

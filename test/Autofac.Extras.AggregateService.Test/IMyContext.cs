@@ -10,13 +10,18 @@ namespace Autofac.Extras.AggregateService.Test
     {
         // Supported signatures
         IMyService MyService { get; }
+
         IMyService GetMyService();
+
         IMyService GetMyService(int someValue);
+
         IMyService GetMyService(string someOtherValue);
+
         IMyService GetMyService(DateTime someDate, int someInt);
 
         // Unsupported signatures
         IMyService PropertyWithSetter { get; set; }
+
         void MethodWithoutReturnValue();
     }
 }

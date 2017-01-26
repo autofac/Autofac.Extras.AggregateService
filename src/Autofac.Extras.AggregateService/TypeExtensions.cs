@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Autofac.Extras.AggregateService
 {
@@ -9,6 +10,9 @@ namespace Autofac.Extras.AggregateService
         /// Return unique interfaces implemented or inherited by <paramref name="type"/>.
         /// Will also include <paramref name="type"/> if it is an interface type.
         /// </summary>
+        /// <param name="type">
+        /// The type for which interfaces should be retrieved.
+        /// </param>
         public static IEnumerable<Type> GetUniqueInterfaces(this Type type)
         {
             var types = new HashSet<Type>();
@@ -18,8 +22,8 @@ namespace Autofac.Extras.AggregateService
                     continue;
                 types.Add(interfaceType);
             }
-            
-            if (type.IsInterface && !types.Contains(type))
+
+            if (type.GetTypeInfo().IsInterface && !types.Contains(type))
             {
                 types.Add(type);
             }
