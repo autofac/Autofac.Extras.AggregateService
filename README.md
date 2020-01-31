@@ -1,4 +1,4 @@
-#Autofac.Extras.AggregateService
+# Autofac.Extras.AggregateService
 
 Dynamic aggregate service implementation generation for [Autofac](https://autofac.org) via Castle DynamicProxy.
 
