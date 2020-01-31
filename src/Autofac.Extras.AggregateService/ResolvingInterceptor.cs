@@ -65,7 +65,7 @@ namespace Autofac.Extras.AggregateService
         {
             if (invocation == null)
             {
-                throw new ArgumentNullException("invocation");
+                throw new ArgumentNullException(nameof(invocation));
             }
 
             // Generic methods need to use the open generic method definition.
@@ -110,7 +110,7 @@ namespace Autofac.Extras.AggregateService
                 .SelectMany(x => x.GetMethods())
                 .ToArray();
 
-            var methodMap = new Dictionary<MethodInfo, Action<IInvocation>>(methods.Count());
+            var methodMap = new Dictionary<MethodInfo, Action<IInvocation>>(methods.Length);
             foreach (var method in methods)
             {
                 var returnType = method.ReturnType;

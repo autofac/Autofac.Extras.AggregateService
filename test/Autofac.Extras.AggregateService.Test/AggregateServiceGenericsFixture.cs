@@ -17,7 +17,7 @@ namespace Autofac.Extras.AggregateService.Test
         }
 
         /// <summary>
-        /// Attempts to resolve an open generic by a method call
+        /// Attempts to resolve an open generic by a method call.
         /// </summary>
         [Fact]
         public void Method_ResolveOpenGeneric()
