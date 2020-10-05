@@ -7,7 +7,7 @@ dotnet_csproj:
 
 configuration: Release
 
-image: Visual Studio 2019
+image: Ubuntu
 
 environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
