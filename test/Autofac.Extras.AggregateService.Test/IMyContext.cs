@@ -1,3 +1,6 @@
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 
 namespace Autofac.Extras.AggregateService.Test
@@ -8,20 +11,25 @@ namespace Autofac.Extras.AggregateService.Test
     /// </summary>
     public interface IMyContext
     {
-        // Supported signatures
+        // Supported
         IMyService MyService { get; }
 
-        IMyService GetMyService();
-
-        IMyService GetMyService(int someValue);
-
-        IMyService GetMyService(string someOtherValue);
-
-        IMyService GetMyService(DateTime someDate, int someInt);
-
-        // Unsupported signatures
+        // Unsupported
         IMyService PropertyWithSetter { get; set; }
 
+        // Supported
+        IMyService GetMyService();
+
+        // Supported
+        IMyService GetMyService(int someValue);
+
+        // Supported
+        IMyService GetMyService(string someOtherValue);
+
+        // Supported
+        IMyService GetMyService(DateTime someDate, int someInt);
+
+        // Unsupported
         void MethodWithoutReturnValue();
     }
 }

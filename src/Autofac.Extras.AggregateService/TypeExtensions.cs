@@ -1,9 +1,15 @@
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Autofac.Extras.AggregateService
 {
+    /// <summary>
+    /// Extension methods for working with <see cref="System.Type"/>.
+    /// </summary>
     internal static class TypeExtensions
     {
         /// <summary>
@@ -13,13 +19,19 @@ namespace Autofac.Extras.AggregateService
         /// <param name="type">
         /// The type for which interfaces should be retrieved.
         /// </param>
+        /// <returns>
+        /// A list of unique interfaces implemented by the provided type.
+        /// </returns>
         public static IEnumerable<Type> GetUniqueInterfaces(this Type type)
         {
             var types = new HashSet<Type>();
             foreach (var interfaceType in type.GetInterfaces())
             {
                 if (types.Contains(interfaceType))
+                {
                     continue;
+                }
+
                 types.Add(interfaceType);
             }
 

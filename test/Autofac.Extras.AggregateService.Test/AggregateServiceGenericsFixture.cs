@@ -1,10 +1,13 @@
-﻿using Xunit;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
 {
     public class AggregateServiceGenericsFixture
     {
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public AggregateServiceGenericsFixture()
         {
@@ -13,7 +16,7 @@ namespace Autofac.Extras.AggregateService.Test
             builder.RegisterGeneric(typeof(OpenGenericImpl<>))
                 .As(typeof(IOpenGeneric<>));
 
-            this._container = builder.Build();
+            _container = builder.Build();
         }
 
         /// <summary>
@@ -22,7 +25,7 @@ namespace Autofac.Extras.AggregateService.Test
         [Fact]
         public void Method_ResolveOpenGeneric()
         {
-            var aggregateService = this._container.Resolve<IOpenGenericAggregate>();
+            var aggregateService = _container.Resolve<IOpenGenericAggregate>();
 
             var generic = aggregateService.GetOpenGeneric<object>();
             Assert.NotNull(generic);

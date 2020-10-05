@@ -2,15 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <NoWarn>$(NoWarn);CS1591;SA1602;SA1611</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Autofac.Configuration.Test</AssemblyName>
     <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    <PackageId>Autofac.Configuration.Test</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);CS1591;SA1600;SA1602;SA1611</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Moq" Version="4.14.6" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.113">
@@ -41,4 +41,7 @@
     <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 </Project>
