@@ -1,3 +1,6 @@
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using Moq;
 using Xunit;
@@ -6,11 +9,11 @@ namespace Autofac.Extras.AggregateService.Test
 {
     public class AggregateServiceFixture
     {
-        private IContainer _container;
+        private readonly IContainer _container;
 
-        private ISomeDependency _someDependencyMock;
+        private readonly ISomeDependency _someDependencyMock;
 
-        private IMyContext _aggregateService;
+        private readonly IMyContext _aggregateService;
 
         public AggregateServiceFixture()
         {

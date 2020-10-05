@@ -1,3 +1,6 @@
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using Moq;
 using Xunit;
@@ -6,7 +9,7 @@ namespace Autofac.Extras.AggregateService.Test
 {
     public class AggregateServiceGeneratorFixture
     {
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public AggregateServiceGeneratorFixture()
         {
@@ -46,7 +49,7 @@ namespace Autofac.Extras.AggregateService.Test
         [Fact]
         public void CreateInstance_ExpectsInterfaceType()
         {
-            Assert.Throws<ArgumentException>(() => AggregateServiceGenerator.CreateInstance<String>(_container));
+            Assert.Throws<ArgumentException>(() => AggregateServiceGenerator.CreateInstance<string>(_container));
         }
     }
 }

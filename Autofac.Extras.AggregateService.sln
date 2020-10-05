@@ -1,11 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Autofac.Extras.AggregateService", "src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj", "{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autofac.Extras.AggregateService", "src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj", "{A885ADCA-BFD9-45EA-AE5B-40E457954AD4}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Autofac.Extras.AggregateService.Test", "test\Autofac.Extras.AggregateService.Test\Autofac.Extras.AggregateService.Test.csproj", "{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autofac.Extras.AggregateService.Test", "test\Autofac.Extras.AggregateService.Test\Autofac.Extras.AggregateService.Test.csproj", "{48B716B8-716E-4D71-8BD3-0BB4B6E35726}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BD0EC59-47FF-4D3F-A6D5-2E0BF8E24F8B}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		NuGet.Config = NuGet.Config
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		build.ps1 = build.ps1
+		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0D0EADE5-8158-4FBC-833C-3B6CF07C7C08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{ADBDED51-3557-4AC9-BCDA-144D6834FDE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{15E7F471-6999-4F69-9D91-570F9F39D9F7}"
+ProjectSection(SolutionItems) = preProject
+	build\Analyzers.ruleset = build\Analyzers.ruleset
+	build\Autofac.Build.psd1 = build\Autofac.Build.psd1
+	build\Autofac.Build.psm1 = build\Autofac.Build.psm1
+	build\CodeAnalysisDictionary.xml = build\CodeAnalysisDictionary.xml
+	build\icon.png = build\icon.png
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +39,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D24C6ED-9A6E-4082-A79C-A3F5B88FC947}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BCA97A6-BF40-4B29-B025-0F53A6E4A682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A885ADCA-BFD9-45EA-AE5B-40E457954AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A885ADCA-BFD9-45EA-AE5B-40E457954AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A885ADCA-BFD9-45EA-AE5B-40E457954AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A885ADCA-BFD9-45EA-AE5B-40E457954AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48B716B8-716E-4D71-8BD3-0BB4B6E35726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48B716B8-716E-4D71-8BD3-0BB4B6E35726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48B716B8-716E-4D71-8BD3-0BB4B6E35726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48B716B8-716E-4D71-8BD3-0BB4B6E35726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E39D3F0A-B882-49B8-ABFF-BA8BEAB81863}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A885ADCA-BFD9-45EA-AE5B-40E457954AD4} = {0D0EADE5-8158-4FBC-833C-3B6CF07C7C08}
+		{48B716B8-716E-4D71-8BD3-0BB4B6E35726} = {ADBDED51-3557-4AC9-BCDA-144D6834FDE5}
 	EndGlobalSection
 EndGlobal

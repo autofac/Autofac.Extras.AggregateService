@@ -1,27 +1,5 @@
-// This software is part of the Autofac IoC container
-// Copyright (c) 2007 - 2010 Autofac Contributors
-// https://autofac.org
-//
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation
-// files (the "Software"), to deal in the Software without
-// restriction, including without limitation the rights to use,
-// copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following
-// conditions:
-//
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +52,7 @@ namespace Autofac.Extras.AggregateService
             invocationHandler(invocation);
         }
 
-        private static PropertyInfo GetProperty(MethodInfo method)
+        private static PropertyInfo? GetProperty(MethodInfo method)
         {
             var takesArg = method.GetParameters().Length == 1;
             var hasReturn = method.ReturnType != typeof(void);
@@ -93,10 +71,11 @@ namespace Autofac.Extras.AggregateService
 
         private static void InvalidReturnTypeInvocation(IInvocation invocation)
         {
-            throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, "The method {0} has invalid return type System.Void", invocation.Method));
+            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The method {0} has invalid return type System.Void", invocation.Method));
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "This method gets called via reflection.")]
+        [SuppressMessage("Microsoft.Performance", "IDE0051", Justification = "This method gets called via reflection.")]
         private void MethodWithoutParams(IInvocation invocation)
         {
             // To handle open generics, this resolves the return type of the invocation rather than the scanned method.
@@ -153,7 +132,7 @@ namespace Autofac.Extras.AggregateService
                 }
 
                 // Methods without parameters
-                var methodWithoutParams = this.GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic);
+                var methodWithoutParams = GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic);
                 var methodWithoutParamsDelegate = (Action<IInvocation>)methodWithoutParams.CreateDelegate(typeof(Action<IInvocation>), this);
                 methodMap.Add(method, methodWithoutParamsDelegate);
             }
