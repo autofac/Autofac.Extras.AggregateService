@@ -43,9 +43,20 @@ namespace Autofac.Extras.AggregateService
                 throw new ArgumentException(AggregateServicesResources.TypeMustBeInterface, nameof(interfaceType));
             }
 
-            builder.Register(c => AggregateServiceGenerator.CreateInstance(interfaceType, c.Resolve<IComponentContext>()))
-                .As(interfaceType)
-                .InstancePerDependency();
+            if (interfaceType.IsGenericType)
+            {
+                builder.RegisterGeneric((c, types) =>
+                        AggregateServiceGenerator.CreateInstance(interfaceType.MakeGenericType(types), c.Resolve<IComponentContext>()))
+                    .As(interfaceType)
+                    .InstancePerDependency();
+            }
+            else
+            {
+                builder.Register(c =>
+                        AggregateServiceGenerator.CreateInstance(interfaceType, c.Resolve<IComponentContext>()))
+                    .As(interfaceType)
+                    .InstancePerDependency();
+            }
         }
     }
 }
