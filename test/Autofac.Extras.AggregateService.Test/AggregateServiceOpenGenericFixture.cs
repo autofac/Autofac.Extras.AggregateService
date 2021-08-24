@@ -22,10 +22,6 @@ namespace Autofac.Extras.AggregateService.Test
             _container = builder.Build();
         }
 
-        /// <summary>
-        ///
-        /// Attempts to resolve a property of the given type.
-        /// </summary>
         [Fact]
         public void ResolveProperty()
         {
