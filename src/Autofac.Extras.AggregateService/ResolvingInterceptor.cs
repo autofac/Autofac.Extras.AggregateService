@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Autofac;
 using Autofac.Core;
 using Castle.DynamicProxy;
 

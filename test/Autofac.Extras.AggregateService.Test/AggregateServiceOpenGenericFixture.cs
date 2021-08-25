@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Linq;
 using Xunit;
 
@@ -39,10 +38,6 @@ namespace Autofac.Extras.AggregateService.Test
             Assert.Same(typeof(string), typeOfOpenGeneric);
         }
 
-        /// <summary>
-        ///
-        /// Attempts to resolve a property of the given type.
-        /// </summary>
         [Fact]
         public void ResolvePropertyAsMyService()
         {
