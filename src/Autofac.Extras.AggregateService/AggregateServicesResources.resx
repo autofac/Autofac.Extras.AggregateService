@@ -123,5 +123,4 @@
   <data name="InterfaceMayNotContainGenericParameters" xml:space="preserve">
     <value>Aggregate service type may not have an open generic type parameter.</value>
   </data>
-
 </root>
