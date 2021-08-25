@@ -120,4 +120,8 @@
   <data name="TypeMustBeInterface" xml:space="preserve">
     <value>Aggregate service type must be an interface.</value>
   </data>
+  <data name="InterfaceMayNotContainGenericParameters" xml:space="preserve">
+    <value>Aggregate service type may not have an open generic type parameter.</value>
+  </data>
+
 </root>

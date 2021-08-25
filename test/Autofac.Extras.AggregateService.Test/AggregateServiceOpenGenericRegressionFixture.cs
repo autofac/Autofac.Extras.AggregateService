@@ -1,25 +1,25 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Linq;
 using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    public class AggregateServiceOpenGenericFixture
+    public class AggregateServiceOpenGenericRegressionFixture
     {
         private readonly IContainer _container;
 
-        public AggregateServiceOpenGenericFixture()
+        public AggregateServiceOpenGenericRegressionFixture()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterAggregateService(typeof(IOpenGenericAggregateWithTypeParameter<>));
+            builder.RegisterAggregateService(typeof(IOpenGenericAggregateWithTypeParameter<string>));
+            builder.RegisterAggregateService(typeof(IOpenGenericAggregateWithTypeParameter<IMyService>));
             builder.RegisterGeneric(typeof(OpenGenericImpl<>))
                 .As(typeof(IOpenGeneric<>));
 
-            builder.RegisterInstance("Hello World!");
             builder.RegisterType<MyServiceImpl>().As<IMyService>();
+            builder.RegisterInstance("Hello World!");
 
             _container = builder.Build();
         }
@@ -29,7 +29,7 @@ namespace Autofac.Extras.AggregateService.Test
         /// Attempts to resolve a property of the given type.
         /// </summary>
         [Fact]
-        public void ResolvePropertyAsString()
+        public void ResolveProperty()
         {
             var aggregateService = _container.Resolve<IOpenGenericAggregateWithTypeParameter<string>>();
 
