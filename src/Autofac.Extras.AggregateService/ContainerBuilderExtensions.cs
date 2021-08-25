@@ -43,20 +43,33 @@ namespace Autofac.Extras.AggregateService
                 throw new ArgumentException(AggregateServicesResources.TypeMustBeInterface, nameof(interfaceType));
             }
 
-            if (interfaceType.IsGenericType)
+            if (interfaceType.IsGenericTypeDefinition)
             {
-                builder.RegisterGeneric((c, types) =>
-                        AggregateServiceGenerator.CreateInstance(interfaceType.MakeGenericType(types), c.Resolve<IComponentContext>()))
-                    .As(interfaceType)
-                    .InstancePerDependency();
+                RegisterAggregateServiceAsOpenGeneric(builder, interfaceType);
             }
             else
             {
-                builder.Register(c =>
-                        AggregateServiceGenerator.CreateInstance(interfaceType, c.Resolve<IComponentContext>()))
-                    .As(interfaceType)
-                    .InstancePerDependency();
+                if (interfaceType.ContainsGenericParameters)
+                {
+                    throw new ArgumentException(AggregateServicesResources.InterfaceMayNotContainGenericParameters, nameof(interfaceType));
+                }
+
+                RegisterAggregateServiceAsInstance(builder, interfaceType);
             }
         }
+
+        private static void RegisterAggregateServiceAsInstance(ContainerBuilder builder, Type interfaceType) =>
+            builder.Register(c =>
+                    AggregateServiceGenerator.CreateInstance(interfaceType, c.Resolve<IComponentContext>()))
+                .As(interfaceType)
+                .InstancePerDependency();
+
+        private static void RegisterAggregateServiceAsOpenGeneric(ContainerBuilder builder, Type interfaceType) =>
+            builder.RegisterGeneric((c, types) =>
+                    AggregateServiceGenerator.CreateInstance(
+                        interfaceType.MakeGenericType(types),
+                        c.Resolve<IComponentContext>()))
+                .As(interfaceType)
+                .InstancePerDependency();
     }
 }
