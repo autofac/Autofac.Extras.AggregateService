@@ -8,5 +8,7 @@ namespace Autofac.Extras.AggregateService.Test
         IOpenGeneric<T> GetOpenGeneric<T>();
 
         IOpenGeneric<string> GetResolvedGeneric();
+
+        IPassThroughOpenGeneric<T> UseOpenGenericParameter<T>(IOpenGeneric<T> openGeneric);
     }
 }
