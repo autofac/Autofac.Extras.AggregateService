@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
@@ -37,6 +36,18 @@ namespace Autofac.Extras.AggregateService.Test
             var notGeneric = aggregateService.GetResolvedGeneric();
             Assert.NotNull(notGeneric);
             Assert.NotSame(generic, notGeneric);
+        }
+
+        [Fact]
+        public void Method_TooManyParameters()
+        {
+            // Issue #11: A function that takes a generic parameter doesn't use the parameter value.
+            var aggregateService = _container.Resolve<IOpenGenericAggregate>();
+
+            var param = aggregateService.GetOpenGeneric<object>();
+            Assert.NotNull(param);
+
+            Assert.Throws<NotSupportedException>(() => aggregateService.TooManyParameters(param, "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r"));
         }
 
         [Fact]
