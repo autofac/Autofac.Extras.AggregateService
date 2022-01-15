@@ -17,6 +17,8 @@ namespace Autofac.Extras.AggregateService
     /// </summary>
     public class ResolvingInterceptor : IInterceptor
     {
+        private static readonly Assembly SystemAssembly = typeof(Func<>).Assembly;
+
         private readonly IComponentContext _context;
 
         private readonly Dictionary<MethodInfo, Action<IInvocation>> _invocationMap;
@@ -117,15 +119,45 @@ namespace Autofac.Extras.AggregateService
                 if (parameters.Length > 0)
                 {
                     // Methods with parameters
-                    methodMap.Add(method, invocation =>
-                        {
-                            var arguments = invocation.Arguments;
-                            var typedParameters = parameters
-                                .Select(info => (Parameter)new TypedParameter(info.ParameterType, arguments[info.Position]));
+                    if (parameters.Any(p => p.ParameterType.IsGenericType))
+                    {
+                        // There are some open generic parameters so resolve a
+                        // Func<X, Y> corresponding to the method parameters and
+                        // method return type. Core Autofac will handle the type
+                        // mapping from open generic to closed generic, etc.
+                        methodMap.Add(
+                            method,
+                            invocation =>
+                            {
+                                var targetMethod = invocation.Method;
+                                var funcArgTypes = targetMethod.GetParameters().OrderBy(p => p.Position).Select(p => p.ParameterType).Append(targetMethod.ReturnType).ToArray();
+                                var funcTypeName = $"System.Func`{funcArgTypes.Length}";
+                                var baseFuncType = SystemAssembly.GetType(funcTypeName);
+                                if (baseFuncType == null)
+                                {
+                                    throw new NotSupportedException($"Unable to locate function type for dynamic resolution: {funcTypeName}. Ensure your method doesn't have too many parameters to convert to a System.Func delegate.");
+                                }
 
-                            // To handle open generics, this resolves the return type of the invocation rather than the scanned method.
-                            invocation.ReturnValue = _context.Resolve(invocation.Method.ReturnType, typedParameters);
-                        });
+                                var builtFuncType = baseFuncType.MakeGenericType(funcArgTypes);
+                                var factory = (Delegate)_context.Resolve(builtFuncType);
+                                invocation.ReturnValue = factory!.DynamicInvoke(invocation.Arguments);
+                            });
+                    }
+                    else
+                    {
+                        // There are no open generic parameters so we can simplify the backing method.
+                        methodMap.Add(
+                            method,
+                            invocation =>
+                            {
+                                var arguments = invocation.Arguments;
+                                var typedParameters = parameters
+                                    .Select(info => (Parameter)new TypedParameter(info.ParameterType, arguments[info.Position]));
+
+                                // To handle open generics, this resolves the return type of the invocation rather than the scanned method.
+                                invocation.ReturnValue = _context.Resolve(invocation.Method.ReturnType, typedParameters);
+                            });
+                    }
 
                     continue;
                 }
