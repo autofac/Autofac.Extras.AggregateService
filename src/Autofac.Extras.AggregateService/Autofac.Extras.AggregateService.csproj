@@ -63,7 +63,7 @@
     <EmbeddedResource Update="AggregateServicesResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AggregateServicesResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>Properties/AggregateServicesResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedFileName>$(IntermediateOutputPath)/AggregateServicesResources.Designer.cs</StronglyTypedFileName>
       <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
       <StronglyTypedNamespace>Autofac.Extras.AggregateService</StronglyTypedNamespace>
       <StronglyTypedClassName>AggregateServicesResources</StronglyTypedClassName>
