@@ -2,6 +2,5 @@
   "cSpell.words": [
     "Xunit"
   ],
-  "omnisharp.enableEditorConfigSupport": true,
-  "omnisharp.enableRoslynAnalyzers": true
+  "omnisharp.enableEditorConfigSupport": true
 }
