@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal class PassThroughOpenGenericImpl<T> : IPassThroughOpenGeneric<T>
+    public class PassThroughOpenGenericImpl<T> : IPassThroughOpenGeneric<T>
     {
         public PassThroughOpenGenericImpl(IOpenGeneric<T> openGeneric)
         {

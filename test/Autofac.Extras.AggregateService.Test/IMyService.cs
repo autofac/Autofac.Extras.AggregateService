@@ -8,7 +8,7 @@ namespace Autofac.Extras.AggregateService.Test
     /// <summary>
     /// A sample service interface.
     /// </summary>
-    internal interface IMyService
+    public interface IMyService
     {
         DateTime SomeDateValue { get; }
 

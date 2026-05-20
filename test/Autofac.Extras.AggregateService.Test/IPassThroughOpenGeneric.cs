@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal interface IPassThroughOpenGeneric<T>
+    public interface IPassThroughOpenGeneric<T>
     {
         IOpenGeneric<T> OpenGeneric { get; }
     }

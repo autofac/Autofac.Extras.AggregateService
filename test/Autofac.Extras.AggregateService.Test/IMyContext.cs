@@ -9,7 +9,7 @@ namespace Autofac.Extras.AggregateService.Test
     /// Interface illustrating an aggregate service context with supported and unsupported
     /// method signatures.
     /// </summary>
-    internal interface IMyContext
+    public interface IMyContext
     {
         // Supported
         IMyService MyService { get; }

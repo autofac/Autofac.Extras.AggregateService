@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal interface ISomeDependency
+    public interface ISomeDependency
     {
     }
 }

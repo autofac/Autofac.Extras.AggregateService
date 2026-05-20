@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal class OpenGenericImpl<T> : IOpenGeneric<T>
+    public class OpenGenericImpl<T> : IOpenGeneric<T>
     {
     }
 }

@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal interface ISuperService
+    public interface ISuperService
     {
         ISomeDependency SomeDependency { get; }
     }
