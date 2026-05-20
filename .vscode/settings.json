@@ -1,9 +1,6 @@
 {
-  "dotnet-test-explorer.runInParallel": true,
-  "dotnet-test-explorer.testProjectPath": "test/**/*Test.csproj",
-  "omnisharp.enableEditorConfigSupport": true,
-  "omnisharp.enableRoslynAnalyzers": true,
   "cSpell.words": [
     "Xunit"
-  ]
+  ],
+  "omnisharp.enableEditorConfigSupport": true
 }
