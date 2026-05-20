@@ -1,4 +1,4 @@
-// Copyright (c) Autofac Project. All rights reserved.
+﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
@@ -9,7 +9,7 @@ namespace Autofac.Extras.AggregateService.Test
     /// Interface illustrating an aggregate service context with supported and unsupported
     /// method signatures.
     /// </summary>
-    public interface IMyContext
+    internal interface IMyContext
     {
         // Supported
         IMyService MyService { get; }

@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    public interface IOpenGenericAggregate
+    internal interface IOpenGenericAggregate
     {
         IOpenGeneric<T> GetOpenGeneric<T>();
 

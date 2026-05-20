@@ -5,7 +5,7 @@ using System;
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    public class MyServiceImpl : IMyService
+    internal class MyServiceImpl : IMyService
     {
         public MyServiceImpl()
         {

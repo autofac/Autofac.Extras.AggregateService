@@ -3,7 +3,7 @@
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    public interface IOpenGenericAggregateWithTypeParameter<T>
+    internal interface IOpenGenericAggregateWithTypeParameter<T>
     {
         T SomeProperty { get; }
 
