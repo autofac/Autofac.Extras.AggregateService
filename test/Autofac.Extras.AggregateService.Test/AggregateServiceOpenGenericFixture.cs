@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal class AggregateServiceOpenGenericFixture
+    public class AggregateServiceOpenGenericFixture
     {
         private readonly IContainer _container;
         private readonly IContainer _containerClosedRegistrations;

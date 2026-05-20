@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
 {
-    internal class ContainerBuilderExtensionsFixture
+    public class ContainerBuilderExtensionsFixture
     {
         [Fact]
         public void RegisterAggregateService_WithGeneric_RegistersServiceInterface()
