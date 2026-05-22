@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
@@ -14,7 +14,7 @@ namespace Autofac.Extras.AggregateService.Test
         public AggregateServiceGeneratorFixture()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterInstance(new Mock<IMyService>().Object);
+            builder.RegisterInstance(Substitute.For<IMyService>());
             _container = builder.Build();
         }
 
