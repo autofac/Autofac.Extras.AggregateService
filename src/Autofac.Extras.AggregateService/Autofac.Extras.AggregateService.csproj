@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Dynamic aggregate service implementation generation for Autofac.</Description>
-    <!-- VersionPrefix patched by AppVeyor -->
-    <VersionPrefix>0.0.1</VersionPrefix>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
