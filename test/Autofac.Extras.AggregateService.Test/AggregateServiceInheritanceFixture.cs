@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Moq;
+using NSubstitute;
 using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test
@@ -18,8 +18,8 @@ namespace Autofac.Extras.AggregateService.Test
 
         public AggregateServiceInheritanceFixture()
         {
-            _someDependencyMock = new Mock<ISomeDependency>().Object;
-            _someOtherDependencyMock = new Mock<ISomeOtherDependency>().Object;
+            _someDependencyMock = Substitute.For<ISomeDependency>();
+            _someOtherDependencyMock = Substitute.For<ISomeOtherDependency>();
 
             var builder = new ContainerBuilder();
             builder.RegisterAggregateService<ISubService>();
