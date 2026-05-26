@@ -3,19 +3,30 @@
 
 using System;
 
-namespace Autofac.Extras.AggregateService.Test
+namespace Autofac.Extras.AggregateService.Test;
+
+/// <summary>
+/// A sample service interface.
+/// </summary>
+public interface IMyService
 {
-    /// <summary>
-    /// A sample service interface.
-    /// </summary>
-    public interface IMyService
+    DateTime SomeDateValue
     {
-        DateTime SomeDateValue { get; }
+        get;
+    }
 
-        ISomeDependency SomeDependency { get; }
+    ISomeDependency SomeDependency
+    {
+        get;
+    }
 
-        int SomeIntValue { get; }
+    int SomeIntValue
+    {
+        get;
+    }
 
-        string SomeStringValue { get; }
+    string SomeStringValue
+    {
+        get;
     }
 }
