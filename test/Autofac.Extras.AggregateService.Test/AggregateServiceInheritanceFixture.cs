@@ -4,42 +4,41 @@
 using NSubstitute;
 using Xunit;
 
-namespace Autofac.Extras.AggregateService.Test
+namespace Autofac.Extras.AggregateService.Test;
+
+public class AggregateServiceInheritanceFixture
 {
-    public class AggregateServiceInheritanceFixture
+    private readonly IContainer _container;
+
+    private readonly ISubService _aggregateService;
+
+    private readonly ISomeDependency _someDependencyMock;
+
+    private readonly ISomeOtherDependency _someOtherDependencyMock;
+
+    public AggregateServiceInheritanceFixture()
     {
-        private readonly IContainer _container;
+        _someDependencyMock = Substitute.For<ISomeDependency>();
+        _someOtherDependencyMock = Substitute.For<ISomeOtherDependency>();
 
-        private readonly ISubService _aggregateService;
+        var builder = new ContainerBuilder();
+        builder.RegisterAggregateService<ISubService>();
+        builder.RegisterInstance(_someDependencyMock);
+        builder.RegisterInstance(_someOtherDependencyMock);
+        _container = builder.Build();
 
-        private readonly ISomeDependency _someDependencyMock;
+        _aggregateService = _container.Resolve<ISubService>();
+    }
 
-        private readonly ISomeOtherDependency _someOtherDependencyMock;
+    [Fact]
+    public void Resolve_PropertyOnSuperType()
+    {
+        Assert.Equal(_someDependencyMock, _aggregateService.SomeDependency);
+    }
 
-        public AggregateServiceInheritanceFixture()
-        {
-            _someDependencyMock = Substitute.For<ISomeDependency>();
-            _someOtherDependencyMock = Substitute.For<ISomeOtherDependency>();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterAggregateService<ISubService>();
-            builder.RegisterInstance(_someDependencyMock);
-            builder.RegisterInstance(_someOtherDependencyMock);
-            _container = builder.Build();
-
-            _aggregateService = _container.Resolve<ISubService>();
-        }
-
-        [Fact]
-        public void Resolve_PropertyOnSuperType()
-        {
-            Assert.Equal(_someDependencyMock, _aggregateService.SomeDependency);
-        }
-
-        [Fact]
-        public void Resolve_PropertyOnSubType()
-        {
-            Assert.Equal(_someOtherDependencyMock, _aggregateService.SomeOtherDependency);
-        }
+    [Fact]
+    public void Resolve_PropertyOnSubType()
+    {
+        Assert.Equal(_someOtherDependencyMock, _aggregateService.SomeOtherDependency);
     }
 }

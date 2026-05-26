@@ -5,51 +5,50 @@ using System;
 using NSubstitute;
 using Xunit;
 
-namespace Autofac.Extras.AggregateService.Test
+namespace Autofac.Extras.AggregateService.Test;
+
+public class AggregateServiceGeneratorFixture
 {
-    public class AggregateServiceGeneratorFixture
+    private readonly IContainer _container;
+
+    public AggregateServiceGeneratorFixture()
     {
-        private readonly IContainer _container;
+        var builder = new ContainerBuilder();
+        builder.RegisterInstance(Substitute.For<IMyService>());
+        _container = builder.Build();
+    }
 
-        public AggregateServiceGeneratorFixture()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(Substitute.For<IMyService>());
-            _container = builder.Build();
-        }
+    [Fact]
+    public void CreateInstance_WithGenericInterface_CreatesInstanceOfInterface()
+    {
+        var instance = AggregateServiceGenerator.CreateInstance<IMyContext>(_container);
 
-        [Fact]
-        public void CreateInstance_WithGenericInterface_CreatesInstanceOfInterface()
-        {
-            var instance = AggregateServiceGenerator.CreateInstance<IMyContext>(_container);
+        Assert.IsAssignableFrom<IMyContext>(instance);
+    }
 
-            Assert.IsAssignableFrom<IMyContext>(instance);
-        }
+    [Fact]
+    public void CreateInstance_WithInterfaceType_CreatesInstanceOfInterface()
+    {
+        var instance = AggregateServiceGenerator.CreateInstance(typeof(IMyContext), _container);
 
-        [Fact]
-        public void CreateInstance_WithInterfaceType_CreatesInstanceOfInterface()
-        {
-            var instance = AggregateServiceGenerator.CreateInstance(typeof(IMyContext), _container);
+        Assert.IsAssignableFrom<IMyContext>(instance);
+    }
 
-            Assert.IsAssignableFrom<IMyContext>(instance);
-        }
+    [Fact]
+    public void CreateInstance_ExpectsInterfaceTypeInstance()
+    {
+        Assert.Throws<ArgumentNullException>(() => AggregateServiceGenerator.CreateInstance(null, _container));
+    }
 
-        [Fact]
-        public void CreateInstance_ExpectsInterfaceTypeInstance()
-        {
-            Assert.Throws<ArgumentNullException>(() => AggregateServiceGenerator.CreateInstance(null, _container));
-        }
+    [Fact]
+    public void CreateInstance_ExpectsComponentInstance()
+    {
+        Assert.Throws<ArgumentNullException>(() => AggregateServiceGenerator.CreateInstance(typeof(IMyContext), null));
+    }
 
-        [Fact]
-        public void CreateInstance_ExpectsComponentInstance()
-        {
-            Assert.Throws<ArgumentNullException>(() => AggregateServiceGenerator.CreateInstance(typeof(IMyContext), null));
-        }
-
-        [Fact]
-        public void CreateInstance_ExpectsInterfaceType()
-        {
-            Assert.Throws<ArgumentException>(() => AggregateServiceGenerator.CreateInstance<string>(_container));
-        }
+    [Fact]
+    public void CreateInstance_ExpectsInterfaceType()
+    {
+        Assert.Throws<ArgumentException>(() => AggregateServiceGenerator.CreateInstance<string>(_container));
     }
 }
