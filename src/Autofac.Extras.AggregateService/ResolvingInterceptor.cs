@@ -159,8 +159,8 @@ public class ResolvingInterceptor : IInterceptor
             }
 
             // Methods without parameters
-            var methodWithoutParams = GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?? throw new InvalidOperationException("Unable to locate the MethodWithoutParams method via reflection.");
+            var methodWithoutParams = GetType().GetMethod(nameof(MethodWithoutParams), BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException($"Unable to locate the {nameof(MethodWithoutParams)} method via reflection.");
             var methodWithoutParamsDelegate = (Action<IInvocation>)methodWithoutParams.CreateDelegate(typeof(Action<IInvocation>), this);
             methodMap.Add(method, methodWithoutParamsDelegate);
         }
