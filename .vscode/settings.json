@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
-    "Xunit"
+    "autofac",
+    "xunit"
   ],
   "omnisharp.enableEditorConfigSupport": true
 }
