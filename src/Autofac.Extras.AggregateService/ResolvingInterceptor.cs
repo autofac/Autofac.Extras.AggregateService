@@ -64,7 +64,7 @@ public class ResolvingInterceptor : IInterceptor
         }
 
         return method
-            .DeclaringType
+            .DeclaringType?
             .GetProperties()
             .Where(prop => prop.GetGetMethod() == method)
             .FirstOrDefault();
@@ -159,7 +159,8 @@ public class ResolvingInterceptor : IInterceptor
             }
 
             // Methods without parameters
-            var methodWithoutParams = GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic);
+            var methodWithoutParams = GetType().GetMethod("MethodWithoutParams", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException("Unable to locate the MethodWithoutParams method via reflection.");
             var methodWithoutParamsDelegate = (Action<IInvocation>)methodWithoutParams.CreateDelegate(typeof(Action<IInvocation>), this);
             methodMap.Add(method, methodWithoutParamsDelegate);
         }
