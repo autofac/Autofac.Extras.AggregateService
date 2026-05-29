@@ -66,8 +66,7 @@ public class ResolvingInterceptor : IInterceptor
         return method
             .DeclaringType?
             .GetProperties()
-            .Where(prop => prop.GetGetMethod() == method)
-            .FirstOrDefault();
+            .FirstOrDefault(prop => prop.GetGetMethod() == method);
     }
 
     private static void InvalidReturnTypeInvocation(IInvocation invocation)

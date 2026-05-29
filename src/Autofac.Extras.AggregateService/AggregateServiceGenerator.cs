@@ -47,7 +47,7 @@ public static class AggregateServiceGenerator
 
         if (!interfaceType.GetTypeInfo().IsInterface)
         {
-            throw new ArgumentException(AggregateServicesResources.TypeMustBeInterface, nameof(interfaceType));
+            throw new ArgumentException(AggregateServicesResources.TypeMustBeInterface, paramName: nameof(interfaceType));
         }
 
         var resolverInterceptor = new ResolvingInterceptor(interfaceType, context);
