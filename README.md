@@ -13,11 +13,42 @@ Please file issues and pull requests for this package in this repository rather 
 
 ## Quick Start
 
-Once you've added a reference to the `Autofac.Pooling` package, you can start using the new `PooledInstancePerLifetimeScope` and `PooledInstancePerMatchingLifetimeScope` methods:
+Once you've added a reference to the `Autofac.Extras.AggregateService` package, you can start by creating your aggregate service interface. The idea is that, instead of injecting several individual services into a consumer, you have a single aggregate that gets injected, where each property is one of the dependencies:
+
+```csharp
+public interface IMyAggregateService
+{
+  IFirstService FirstService { get; }
+  ISecondService SecondService { get; }
+}
+```
+
+Update your consumer to take in the aggregate:
+
+```csharp
+public class SomeController
+{
+  private readonly IMyAggregateService _aggregateService;
+
+  public SomeController(IMyAggregateService aggregateService)
+  {
+    _aggregateService = aggregateService;
+  }
+}
+```
+
+Finally, make sure you register the individual dependencies, the aggregate service interface, and your consumer.
 
 ```csharp
 var builder = new ContainerBuilder();
+builder.RegisterAggregateService<IMyAggregateService>();
+builder.Register(/*...*/).As<IFirstService>();
+builder.Register(/*...*/).As<ISecondService>();
+builder.RegisterType<SomeController>();
+var container = builder.Build();
 ```
+
+When you resolve the consumer, the aggregate service will be injected and you can use the properties on that. This allows you to add new dependencies to the interface without changing all of your consumers.
 
 ## Get Help
 
