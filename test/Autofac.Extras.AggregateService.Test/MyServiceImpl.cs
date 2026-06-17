@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-
 namespace Autofac.Extras.AggregateService.Test;
 
 public class MyServiceImpl : IMyService
@@ -16,7 +14,7 @@ public class MyServiceImpl : IMyService
         SomeIntValue = someIntValue;
     }
 
-    public MyServiceImpl(string someStringValue, ISomeDependency someDependency)
+    public MyServiceImpl(string? someStringValue, ISomeDependency someDependency)
     {
         SomeStringValue = someStringValue;
         SomeDependency = someDependency;
@@ -35,7 +33,7 @@ public class MyServiceImpl : IMyService
         private set;
     }
 
-    public string SomeStringValue
+    public string? SomeStringValue
     {
         get;
         private set;
@@ -46,7 +44,7 @@ public class MyServiceImpl : IMyService
         get; private set;
     }
 
-    public ISomeDependency SomeDependency
+    public ISomeDependency? SomeDependency
     {
         get; private set;
     }

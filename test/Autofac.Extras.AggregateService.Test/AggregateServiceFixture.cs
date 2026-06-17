@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using NSubstitute;
-using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test;
 
@@ -50,7 +48,7 @@ public class AggregateServiceFixture
     [Fact]
     public void Property_Setter_Throws()
     {
-        Assert.Throws<InvalidOperationException>(() => _aggregateService.PropertyWithSetter = null);
+        Assert.Throws<InvalidOperationException>(() => _aggregateService.PropertyWithSetter = null!);
     }
 
     [Fact]

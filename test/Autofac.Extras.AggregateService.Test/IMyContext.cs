@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-
 namespace Autofac.Extras.AggregateService.Test;
 
 /// <summary>
@@ -30,7 +28,7 @@ public interface IMyContext
     IMyService GetMyService(int someValue);
 
     // Supported
-    IMyService GetMyService(string someOtherValue);
+    IMyService GetMyService(string? someOtherValue);
 
     // Supported
     IMyService GetMyService(DateTime someDate, int someInt);

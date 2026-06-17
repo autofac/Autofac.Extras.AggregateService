@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using NSubstitute;
-using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test;
 
@@ -33,7 +31,7 @@ public class ContainerBuilderExtensionsFixture
     public void RegisterAggregateService_WithNullInterfaceType_ThrowsArgumentNullException()
     {
         var builder = new ContainerBuilder();
-        Assert.Throws<ArgumentNullException>(() => builder.RegisterAggregateService(null));
+        Assert.Throws<ArgumentNullException>(() => builder.RegisterAggregateService(null!));
     }
 
     [Fact]

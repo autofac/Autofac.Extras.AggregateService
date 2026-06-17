@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using NSubstitute;
-using Xunit;
 
 namespace Autofac.Extras.AggregateService.Test;
 

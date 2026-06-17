@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-
 namespace Autofac.Extras.AggregateService.Test;
 
 /// <summary>
@@ -15,7 +13,7 @@ public interface IMyService
         get;
     }
 
-    ISomeDependency SomeDependency
+    ISomeDependency? SomeDependency
     {
         get;
     }
@@ -25,7 +23,7 @@ public interface IMyService
         get;
     }
 
-    string SomeStringValue
+    string? SomeStringValue
     {
         get;
     }
