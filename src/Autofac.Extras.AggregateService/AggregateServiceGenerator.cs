@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Castle.DynamicProxy;
 
@@ -49,6 +50,21 @@ public static class AggregateServiceGenerator
             throw new ArgumentException(AggregateServicesResources.TypeMustBeInterface, paramName: nameof(interfaceType));
         }
 
+        // Prefer a source-generated implementation when one is available. This avoids the
+        // dynamic proxy entirely and is trimming/NativeAOT safe. Falls back to Castle
+        // DynamicProxy when the generator could not see this interface statically.
+        if (GeneratedAggregateServiceRegistry.TryCreate(interfaceType, context, out var generated))
+        {
+            return generated;
+        }
+
+        return CreateProxyInstance(interfaceType, context);
+    }
+
+    [RequiresUnreferencedCode("The dynamic proxy fallback uses reflection over the aggregate service interface and is not compatible with trimming. Aggregate services discovered statically by the source generator do not use this path.")]
+    [RequiresDynamicCode("The dynamic proxy fallback emits IL at runtime and is not compatible with NativeAOT. Aggregate services discovered statically by the source generator do not use this path.")]
+    private static object CreateProxyInstance(Type interfaceType, IComponentContext context)
+    {
         var resolverInterceptor = new ResolvingInterceptor(interfaceType, context);
         return _generator.CreateInterfaceProxyWithoutTarget(interfaceType, resolverInterceptor);
     }

@@ -54,7 +54,9 @@
         "artifacts/logs",
         "--logger:trx",
         "--collect:XPlat Code Coverage",
-        "--settings:build/Coverage.runsettings"
+        "--settings:build/Coverage.runsettings",
+        "--filter",
+        "FullyQualifiedName!~Bench"
       ],
       "command": "dotnet",
       "dependsOn": [

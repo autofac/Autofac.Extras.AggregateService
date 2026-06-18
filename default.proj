@@ -47,6 +47,12 @@
     <Message Text="****************************************" Importance="high" />
     <CallTarget Targets="Clean;Compile;Test;Package" />
   </Target>
+  <Target Name="Benchmarks" DependsOnTargets="Compile">
+    <Message Text="****************************************" Importance="high" />
+    <Message Text="Running Benchmarks" Importance="high" />
+    <Message Text="****************************************" Importance="high" />
+    <Exec Command="dotnet run --project &quot;$([System.IO.Path]::Combine($(MSBuildProjectDirectory),'bench/Autofac.Extras.AggregateService.Bench'))&quot; -c $(Configuration) --no-launch-profile --no-restore --no-build -- --filter Autofac.Extras.AggregateService.Bench.*" />
+  </Target>
   <Target Name="Clean">
     <RemoveDir Directories="@(CleanDirectory)" />
     <RemoveDir Directories="%(SourceProject.RootDir)%(SourceProject.Directory)bin;%(SourceProject.RootDir)%(SourceProject.Directory)obj" />
