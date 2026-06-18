@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "autofac",
+    "netstandard",
     "xunit"
   ],
   "coverage-gutters.coverageBaseDir": "artifacts/logs",

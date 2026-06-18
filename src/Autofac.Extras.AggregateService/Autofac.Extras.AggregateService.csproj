@@ -64,6 +64,25 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <!-- Reference the source generator as an analyzer so it runs against this project's own
+       build, and so its output assembly is available to pack into the NuGet package.
+       ReferenceOutputAssembly=false keeps Microsoft.CodeAnalysis off this library's reference
+       and runtime closure. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <!-- Pack the generator assembly into the package's analyzers/dotnet/cs folder so consumers
+       get source generation automatically just by referencing this single package. -->
+  <Target Name="IncludeSourceGeneratorInPackage" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="..\Autofac.Extras.AggregateService.SourceGenerator\bin\$(Configuration)\netstandard2.0\Autofac.Extras.AggregateService.SourceGenerator.dll"
+            Pack="true"
+            PackagePath="analyzers/dotnet/cs"
+            Visible="false" />
+    </ItemGroup>
+  </Target>
   <ItemDefinitionGroup>
     <EmbeddedResource>
       <Generator>MSBuild:Compile</Generator>

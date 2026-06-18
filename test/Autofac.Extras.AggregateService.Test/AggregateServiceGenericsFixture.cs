@@ -38,13 +38,20 @@ public class AggregateServiceGenericsFixture
     [Fact]
     public void Method_TooManyParameters()
     {
-        // Issue #11: A function that takes a generic parameter doesn't use the parameter value.
+        // Issue #11: Previously with Castle, we ran into parameter limitations.
+        // The dynamic proxy fallback maps method parameters onto a
+        // System.Func<> delegate, which tops out at 16 type arguments and
+        // throws NotSupportedException beyond that. The source generator emits
+        // a direct Resolve call with TypedParameter values and has no such
+        // limit, so this 18-parameter method now resolves successfully on the
+        // generated path.
         var aggregateService = _container.Resolve<IOpenGenericAggregate>();
 
         var param = aggregateService.GetOpenGeneric<object>();
         Assert.NotNull(param);
 
-        Assert.Throws<NotSupportedException>(() => aggregateService.TooManyParameters(param, "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r"));
+        var result = aggregateService.TooManyParameters(param, "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r");
+        Assert.NotNull(result);
     }
 
     [Fact]
