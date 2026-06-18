@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Autofac.Extras.AggregateService.Test;
+namespace Autofac.Extras.AggregateService.Test.Stubs;
 
-public interface IPassThroughOpenGeneric<T>
+public interface ISuperService
 {
-    IOpenGeneric<T> OpenGeneric
+    ISomeDependency SomeDependency
     {
         get;
     }

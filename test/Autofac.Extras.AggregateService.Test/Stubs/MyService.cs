@@ -1,26 +1,26 @@
-﻿// Copyright (c) Autofac Project. All rights reserved.
+// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Autofac.Extras.AggregateService.Test;
+namespace Autofac.Extras.AggregateService.Test.Stubs;
 
-public class MyServiceImpl : IMyService
+public class MyService : IMyService
 {
-    public MyServiceImpl()
+    public MyService()
     {
     }
 
-    public MyServiceImpl(int someIntValue)
+    public MyService(int someIntValue)
     {
         SomeIntValue = someIntValue;
     }
 
-    public MyServiceImpl(string? someStringValue, ISomeDependency someDependency)
+    public MyService(string? someStringValue, ISomeDependency someDependency)
     {
         SomeStringValue = someStringValue;
         SomeDependency = someDependency;
     }
 
-    public MyServiceImpl(DateTime someDate, int someInt, ISomeDependency someDependency)
+    public MyService(DateTime someDate, int someInt, ISomeDependency someDependency)
     {
         SomeDateValue = someDate;
         SomeIntValue = someInt;
