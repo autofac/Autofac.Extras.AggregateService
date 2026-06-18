@@ -12,8 +12,10 @@
     <SignAssembly>true</SignAssembly>
     <NeutralLanguage>en-US</NeutralLanguage>
     <!-- Frameworks and language features -->
-    <!-- Source generators must target netstandard2.0 - that is the framework the Roslyn
-         compiler host loads analyzers as. -->
+    <!--
+      Source generators must target netstandard2.0 - that is the framework the
+      Roslyn compiler host loads analyzers as.
+    -->
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -51,6 +53,9 @@
       order to run the generator. Consumers on older compilers simply do not run
       it and fall back to the Castle DynamicProxy path, so a newer version
       degrades safely rather than breaking.
+
+      If you change the Microsoft.CodeAnalysis.CSharp version, update the test
+      project reference to match.
     -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.14.0]">
       <PrivateAssets>all</PrivateAssets>
