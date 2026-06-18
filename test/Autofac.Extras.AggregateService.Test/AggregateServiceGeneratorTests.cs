@@ -18,6 +18,17 @@ public class AggregateServiceGeneratorTests
     }
 
     [Fact]
+    public void CreateInstance_NestedInterfaceType()
+    {
+        using var container = CreateContainer();
+
+        var instance = AggregateServiceGenerator.CreateInstance(typeof(INestedAggregateService), container);
+
+        var aggregateService = Assert.IsAssignableFrom<INestedAggregateService>(instance);
+        Assert.NotNull(aggregateService.MyService);
+    }
+
+    [Fact]
     public void CreateInstance_NullComponentContext()
     {
         Assert.Throws<ArgumentNullException>(() => AggregateServiceGenerator.CreateInstance(typeof(IAggregateService), null!));
@@ -50,5 +61,13 @@ public class AggregateServiceGeneratorTests
         var builder = new ContainerBuilder();
         builder.RegisterInstance(Substitute.For<IMyService>());
         return builder.Build();
+    }
+
+    public interface INestedAggregateService
+    {
+        IMyService MyService
+        {
+            get;
+        }
     }
 }

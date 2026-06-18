@@ -19,6 +19,7 @@
 namespace System.Diagnostics.CodeAnalysis;
 
 #if !NETSTANDARD2_1_OR_GREATER
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 internal sealed class NotNullWhenAttribute : Attribute
 {
@@ -34,6 +35,7 @@ internal sealed class NotNullWhenAttribute : Attribute
 }
 #endif
 
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 internal sealed class RequiresUnreferencedCodeAttribute : Attribute
 {
@@ -53,6 +55,7 @@ internal sealed class RequiresUnreferencedCodeAttribute : Attribute
     }
 }
 
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
 internal sealed class UnconditionalSuppressMessageAttribute : Attribute
 {
@@ -93,6 +96,7 @@ internal sealed class UnconditionalSuppressMessageAttribute : Attribute
     }
 }
 
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 internal sealed class RequiresDynamicCodeAttribute : Attribute
 {

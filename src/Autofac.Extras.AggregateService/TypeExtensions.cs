@@ -25,11 +25,6 @@ internal static class TypeExtensions
         var types = new HashSet<Type>();
         foreach (var interfaceType in type.GetInterfaces())
         {
-            if (types.Contains(interfaceType))
-            {
-                continue;
-            }
-
             types.Add(interfaceType);
         }
 

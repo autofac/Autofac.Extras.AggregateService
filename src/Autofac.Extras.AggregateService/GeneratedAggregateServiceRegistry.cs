@@ -32,14 +32,14 @@ namespace Autofac.Extras.AggregateService;
 /// </remarks>
 public static class GeneratedAggregateServiceRegistry
 {
-    private static readonly object SyncRoot = new object();
+    private static readonly object _syncRoot = new object();
 
     // Closed (non-generic, or already-closed generic) interface type -> factory.
-    private static readonly Dictionary<Type, Func<IComponentContext, object>> ClosedFactories =
+    private static readonly Dictionary<Type, Func<IComponentContext, object>> _closedFactories =
         new Dictionary<Type, Func<IComponentContext, object>>();
 
     // Open generic interface definition -> open generic backing class definition.
-    private static readonly Dictionary<Type, Type> OpenGenericBackings = new Dictionary<Type, Type>();
+    private static readonly Dictionary<Type, Type> _openGenericBackings = new Dictionary<Type, Type>();
 
     /// <summary>
     /// Registers a generated factory for a closed aggregate service interface
@@ -68,9 +68,9 @@ public static class GeneratedAggregateServiceRegistry
             throw new ArgumentNullException(nameof(factory));
         }
 
-        lock (SyncRoot)
+        lock (_syncRoot)
         {
-            ClosedFactories[interfaceType] = factory;
+            _closedFactories[interfaceType] = factory;
         }
     }
 
@@ -101,9 +101,9 @@ public static class GeneratedAggregateServiceRegistry
             throw new ArgumentNullException(nameof(openBackingType));
         }
 
-        lock (SyncRoot)
+        lock (_syncRoot)
         {
-            OpenGenericBackings[openInterfaceType] = openBackingType;
+            _openGenericBackings[openInterfaceType] = openBackingType;
         }
     }
 
@@ -133,11 +133,11 @@ public static class GeneratedAggregateServiceRegistry
         Func<IComponentContext, object>? factory = null;
         Type? openBacking = null;
 
-        lock (SyncRoot)
+        lock (_syncRoot)
         {
-            if (!ClosedFactories.TryGetValue(interfaceType, out factory) && interfaceType.IsConstructedGenericType)
+            if (!_closedFactories.TryGetValue(interfaceType, out factory) && interfaceType.IsConstructedGenericType)
             {
-                OpenGenericBackings.TryGetValue(interfaceType.GetGenericTypeDefinition(), out openBacking);
+                _openGenericBackings.TryGetValue(interfaceType.GetGenericTypeDefinition(), out openBacking);
             }
         }
 
