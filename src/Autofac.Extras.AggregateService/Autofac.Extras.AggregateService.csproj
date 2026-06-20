@@ -43,6 +43,21 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <NoWarn>$(NoWarn);8600;8601;8602;8603;8604</NoWarn>
   </PropertyGroup>
+  <!--
+    Advertise the assembly as AOT/trim-compatible on the modern TFMs (net7.0+);
+    netstandard targets cannot be AOT-analyzed. IsAotCompatible implicitly
+    enables the trim, AOT, and single-file analyzers, so combined with Release
+    TreatWarningsAsErrors this is a permanent in-build gate: any new unannotated
+    reflection/dynamic-code call site fails the build. The source-generated
+    resolve path is genuinely clean; the dynamic proxy fallback and open-generic
+    registration are individually annotated [RequiresUnreferencedCode] /
+    [RequiresDynamicCode] (or suppressed at their gated entry points) so
+    warnings surface at the consumer's call site only when those scenarios are
+    used.
+  -->
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
@@ -51,7 +66,10 @@
     <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="9.2.0" />
+    <!-- TEMPORARY: local ProjectReference to core Autofac's feature/aot-annotations branch to
+         shake out AOT annotation issues. Revert to the PackageReference below before committing.
+         <PackageReference Include="Autofac" Version="9.2.0" /> -->
+    <ProjectReference Include="..\..\..\Autofac\src\Autofac\Autofac.csproj" />
     <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>all</PrivateAssets>
@@ -64,17 +82,22 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <!-- Reference the source generator as an analyzer so it runs against this project's own
-       build, and so its output assembly is available to pack into the NuGet package.
-       ReferenceOutputAssembly=false keeps Microsoft.CodeAnalysis off this library's reference
-       and runtime closure. -->
+  <!--
+    Reference the source generator as an analyzer so it runs against this
+    project's own build, and so its output assembly is available to pack into
+    the NuGet package. ReferenceOutputAssembly=false keeps
+    Microsoft.CodeAnalysis off this library's reference and runtime closure.
+  -->
   <ItemGroup>
     <ProjectReference Include="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
-  <!-- Pack the generator assembly into the package's analyzers/dotnet/cs folder so consumers
-       get source generation automatically just by referencing this single package. -->
+  <!--
+    Pack the generator assembly into the package's analyzers/dotnet/cs folder so
+    consumers get source generation automatically just by referencing this
+    single package.
+  -->
   <Target Name="IncludeSourceGeneratorInPackage" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
       <None Include="..\Autofac.Extras.AggregateService.SourceGenerator\bin\$(Configuration)\netstandard2.0\Autofac.Extras.AggregateService.SourceGenerator.dll"

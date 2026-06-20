@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Autofac.Extras.AggregateService;
@@ -63,6 +64,13 @@ public static class ContainerBuilderExtensions
             .As(interfaceType)
             .InstancePerDependency();
 
+    // Registering an open generic aggregate service constructs the closed interface type at
+    // resolution time (MakeGenericType), which is inherently a dynamic-code operation. This is
+    // only reached for open generic definitions (gated by IsGenericTypeDefinition in the caller),
+    // so the common closed-interface registration path stays AOT/trim-clean. Open-generic
+    // registration under NativeAOT is documented as an advanced, not-fully-AOT-safe scenario.
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Open generic aggregate service registration requires MakeGenericType. Only reached for open generic definitions; closed registrations do not hit this path. Documented as not fully AOT-safe.")]
+    [UnconditionalSuppressMessage("Trimming", "IL2055", Justification = "See IL3050 justification.")]
     private static void RegisterAggregateServiceAsOpenGeneric(ContainerBuilder builder, Type interfaceType)
         => builder.RegisterGeneric((c, types) =>
                 AggregateServiceGenerator.CreateInstance(

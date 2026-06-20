@@ -128,6 +128,7 @@ public static class GeneratedAggregateServiceRegistry
     [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Open generic construction is only reached for open generic aggregate services, which are an advanced scenario documented as not fully AOT-safe. Closed aggregate services never hit this path.")]
     [UnconditionalSuppressMessage("Trimming", "IL2055", Justification = "See IL3050 justification.")]
     [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "See IL3050 justification.")]
+    [UnconditionalSuppressMessage("Trimming", "IL2067", Justification = "The open generic backing type is supplied by the source generator's module initializer with its public constructor intact (the generated class has a single public constructor taking IComponentContext); closed aggregate services never hit this path.")]
     internal static bool TryCreate(Type interfaceType, IComponentContext context, [NotNullWhen(true)] out object? instance)
     {
         Func<IComponentContext, object>? factory = null;

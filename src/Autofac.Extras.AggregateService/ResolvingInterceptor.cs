@@ -25,6 +25,8 @@ public class ResolvingInterceptor : IInterceptor
     /// </summary>
     /// <param name="interfaceType">Type of the interface to intercept.</param>
     /// <param name="context">The resolution context.</param>
+    [RequiresUnreferencedCode("The dynamic proxy fallback reflects over the aggregate service interface and is not compatible with trimming. Register aggregate services with statically-visible interfaces so the source generator handles them instead.")]
+    [RequiresDynamicCode("The dynamic proxy fallback builds System.Func delegate types at runtime and is not compatible with NativeAOT. Register aggregate services with statically-visible interfaces so the source generator handles them instead.")]
     public ResolvingInterceptor(Type interfaceType, IComponentContext context)
     {
         _context = context;
@@ -50,6 +52,7 @@ public class ResolvingInterceptor : IInterceptor
         invocationHandler(invocation);
     }
 
+    [RequiresUnreferencedCode("Reflects over the declaring interface's properties.")]
     private static PropertyInfo? GetProperty(MethodInfo method)
     {
         var takesArg = method.GetParameters().Length == 1;
@@ -79,6 +82,8 @@ public class ResolvingInterceptor : IInterceptor
         invocation.ReturnValue = _context.Resolve(invocation.Method.ReturnType);
     }
 
+    [RequiresUnreferencedCode("Reflects over the aggregate service interface and its inherited interfaces.")]
+    [RequiresDynamicCode("Builds System.Func delegate types via MakeGenericType for methods with generic parameters.")]
     private Dictionary<MethodInfo, Action<IInvocation>> SetupInvocationMap(Type interfaceType)
     {
         var methods = interfaceType
