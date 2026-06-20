@@ -180,4 +180,133 @@ namespace TestConsumer
 
         Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
     }
+
+    [Fact]
+    public void NonInterfaceTypeArgumentIsNotGenerated()
+    {
+        // CreateInstance<T> where T is not an interface cannot be an aggregate service; the
+        // generator must skip it (the runtime throws ArgumentException instead).
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public static class Registration
+    {
+        public static object Configure(IComponentContext context)
+        {
+            return AggregateServiceGenerator.CreateInstance<string>(context);
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+    }
+
+    [Fact]
+    public void NestedInterfaceIsNotGenerated()
+    {
+        // An aggregate interface nested inside another type is not supported; the generator skips
+        // it and the runtime falls back to the dynamic proxy.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public class Outer
+    {
+        public interface INested
+        {
+            IDep Dep { get; }
+        }
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<Outer.INested>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+        Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
+    }
+
+    [Fact]
+    public void InterfaceWithEventIsNotGenerated()
+    {
+        // Events are an unsupported member shape; the generator skips the interface and reports
+        // AGSVC001 so the dynamic-proxy fallback is visible.
+        var source = @"using System;
+using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public interface IMyAggregate
+    {
+        IDep Dep { get; }
+
+        event EventHandler Something;
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+        Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
+    }
+
+    [Fact]
+    public void NullConditionalInvocationIsDiscovered()
+    {
+        // A null-conditional registration call (builder?.RegisterAggregateService<T>()) uses a
+        // MemberBindingExpressionSyntax; the generator must still discover it.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public interface IMyAggregate
+    {
+        IDep Dep { get; }
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder?.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Contains(result.GeneratedTrees, t => t.FilePath.Contains("IMyAggregate", StringComparison.Ordinal));
+    }
 }

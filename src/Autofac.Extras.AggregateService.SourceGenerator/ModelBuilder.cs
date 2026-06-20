@@ -12,11 +12,11 @@ namespace Autofac.Extras.AggregateService.SourceGenerator;
 /// </summary>
 internal static class ModelBuilder
 {
-    private static readonly SymbolDisplayFormat FullyQualifiedFormat = SymbolDisplayFormat.FullyQualifiedFormat;
+    private static readonly SymbolDisplayFormat _fullyQualifiedFormat = SymbolDisplayFormat.FullyQualifiedFormat;
 
     // Fully-qualified name without any type parameter/argument list, so the emitter can build
     // the open (IFoo<,>) and closed (IFoo<T>) forms itself without double-appending.
-    private static readonly SymbolDisplayFormat FullyQualifiedNoTypeParametersFormat =
+    private static readonly SymbolDisplayFormat _fullyQualifiedNoTypeParametersFormat =
         SymbolDisplayFormat.FullyQualifiedFormat.WithGenericsOptions(SymbolDisplayGenericsOptions.None);
 
     /// <summary>
@@ -60,7 +60,7 @@ internal static class ModelBuilder
             return null;
         }
 
-        var fullyQualified = definition.ToDisplayString(FullyQualifiedNoTypeParametersFormat);
+        var fullyQualified = definition.ToDisplayString(_fullyQualifiedNoTypeParametersFormat);
         var ns = definition.ContainingNamespace.IsGlobalNamespace
             ? string.Empty
             : definition.ContainingNamespace.ToDisplayString();
@@ -174,7 +174,7 @@ internal static class ModelBuilder
             return null;
         }
 
-        var propertyType = property.Type.ToDisplayString(FullyQualifiedFormat);
+        var propertyType = property.Type.ToDisplayString(_fullyQualifiedFormat);
         return new MemberModel(
             MemberKind.Property,
             property.Name,
@@ -204,7 +204,7 @@ internal static class ModelBuilder
             }
         }
 
-        var returnType = method.ReturnType.ToDisplayString(FullyQualifiedFormat);
+        var returnType = method.ReturnType.ToDisplayString(_fullyQualifiedFormat);
         var typeParameters = method.TypeParameters.Select(BuildTypeParameter).ToArray();
 
         // Void methods have no return type to resolve; the runtime throws when they are invoked,
@@ -245,7 +245,7 @@ internal static class ModelBuilder
             .OrderBy(p => p.Ordinal)
             .Select(p => new ParameterModel(
                 p.Name,
-                p.Type.ToDisplayString(FullyQualifiedFormat),
+                p.Type.ToDisplayString(_fullyQualifiedFormat),
                 BuildParameterModifier(p)))
             .ToArray();
 
@@ -290,7 +290,7 @@ internal static class ModelBuilder
 
         foreach (var constraintType in typeParameter.ConstraintTypes)
         {
-            constraints.Add(constraintType.ToDisplayString(FullyQualifiedFormat));
+            constraints.Add(constraintType.ToDisplayString(_fullyQualifiedFormat));
         }
 
         // The parameterless-constructor constraint must come last and is not combinable with the
