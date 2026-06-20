@@ -10,24 +10,20 @@ namespace TestConsumer
     {
         private readonly global::Autofac.IComponentContext __autofacContext;
 
-        private readonly global::TestConsumer.ISecond __Second_value;
-        private readonly global::TestConsumer.IFirst __First_value;
 
         public __TestConsumer_IMyAggregate_Aggregate(global::Autofac.IComponentContext context)
         {
             __autofacContext = context;
-            __Second_value = (global::TestConsumer.ISecond)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.ISecond));
-            __First_value = (global::TestConsumer.IFirst)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IFirst));
         }
 
-        public global::TestConsumer.ISecond Second
+        public global::TestConsumer.IThing<T> Get<T>() where T : class, new()
         {
-            get => __Second_value;
+            return (global::TestConsumer.IThing<T>)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IThing<T>));
         }
 
-        public global::TestConsumer.IFirst First
+        public global::TestConsumer.IThing<TKey> Multi<TKey, TValue>() where TKey : struct where TValue : global::TestConsumer.IDep
         {
-            get => __First_value;
+            return (global::TestConsumer.IThing<TKey>)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IThing<TKey>));
         }
     }
 }

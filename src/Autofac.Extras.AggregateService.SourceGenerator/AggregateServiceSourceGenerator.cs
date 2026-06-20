@@ -61,15 +61,15 @@ public sealed class AggregateServiceSourceGenerator : IIncrementalGenerator
     /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var models = context.SyntaxProvider
+        var results = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => IsCandidateInvocation(node),
-                transform: static (ctx, ct) => GetTargetInterface(ctx, ct))
+                transform: static (ctx, ct) => GetDiscoveryResult(ctx, ct))
             .Where(static result => result is not null)
             .Select(static (result, _) => result!.Value);
 
         // Collect so identical interfaces referenced from multiple call sites emit only once.
-        var collected = models.Collect();
+        var collected = results.Collect();
 
         // The generated module initializer needs System.Runtime.CompilerServices.ModuleInitializerAttribute.
         // It exists in-box on net5.0+ but not on netstandard2.0 / net472 consumers, so detect its
@@ -108,7 +108,7 @@ public sealed class AggregateServiceSourceGenerator : IIncrementalGenerator
         return identifier is RegisterAggregateServiceMethod or CreateInstanceMethod;
     }
 
-    private static AggregateServiceModel? GetTargetInterface(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)
+    private static DiscoveryResult? GetDiscoveryResult(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var invocation = (InvocationExpressionSyntax)ctx.Node;
         var semanticModel = ctx.SemanticModel;
@@ -129,10 +129,25 @@ public sealed class AggregateServiceSourceGenerator : IIncrementalGenerator
         var interfaceType = ResolveInterfaceType(method, invocation, semanticModel, cancellationToken);
         if (interfaceType is null)
         {
+            // An aggregate registration whose type is not statically visible (e.g. a
+            // runtime-computed Type, or an open type parameter from a generic pass-through
+            // helper). The generator cannot see it; the runtime falls back silently. This is
+            // not reported - there is no specific interface to name.
             return null;
         }
 
-        return ModelBuilder.TryBuild(interfaceType);
+        var model = ModelBuilder.TryBuild(interfaceType);
+        if (model is not null)
+        {
+            return DiscoveryResult.Supported(model.Value);
+        }
+
+        // The interface is identifiable but has a shape the generator cannot emit (event,
+        // indexer, ref/out parameter, etc.). Record it so AGSVC001 can surface the silent
+        // fallback to the consumer.
+        return DiscoveryResult.Unsupported(
+            interfaceType.ToDisplayString(),
+            LocationInfo.CreateFrom(invocation));
     }
 
     private static INamedTypeSymbol? ResolveInterfaceType(
@@ -162,23 +177,42 @@ public sealed class AggregateServiceSourceGenerator : IIncrementalGenerator
 
     private static void Emit(
         SourceProductionContext context,
-        ImmutableArray<AggregateServiceModel> models,
+        ImmutableArray<DiscoveryResult> results,
         bool needsModuleInitializerPolyfill)
     {
-        if (models.IsDefaultOrEmpty)
+        if (results.IsDefaultOrEmpty)
         {
             return;
         }
 
         // De-duplicate by the interface's fully-qualified (open) name. The same aggregate
         // service is commonly registered and resolved from several call sites.
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var seenModels = new HashSet<string>(StringComparer.Ordinal);
         var unique = new List<AggregateServiceModel>();
-        foreach (var model in models)
+
+        // Report each unsupported interface once, at its first-seen call site.
+        var reportedUnsupported = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var result in results)
         {
-            if (seen.Add(model.InterfaceFullyQualifiedName))
+            if (result.Model is { } model)
             {
-                unique.Add(model);
+                if (seenModels.Add(model.InterfaceFullyQualifiedName))
+                {
+                    unique.Add(model);
+                }
+
+                continue;
+            }
+
+            var interfaceName = result.UnsupportedInterfaceName!;
+            if (reportedUnsupported.Add(interfaceName))
+            {
+                var location = result.Location?.ToLocation() ?? Location.None;
+                context.ReportDiagnostic(Diagnostic.Create(
+                    DiagnosticDescriptors.UnsupportedInterfaceFallsBackToProxy,
+                    location,
+                    interfaceName));
             }
         }
 
@@ -188,7 +222,10 @@ public sealed class AggregateServiceSourceGenerator : IIncrementalGenerator
             context.AddSource($"{model.BackingClassName}.g.cs", source);
         }
 
-        var registrations = Emitter.EmitRegistrations(unique, needsModuleInitializerPolyfill);
-        context.AddSource("GeneratedAggregateServiceRegistrations.g.cs", registrations);
+        if (unique.Count > 0)
+        {
+            var registrations = Emitter.EmitRegistrations(unique, needsModuleInitializerPolyfill);
+            context.AddSource("GeneratedAggregateServiceRegistrations.g.cs", registrations);
+        }
     }
 }

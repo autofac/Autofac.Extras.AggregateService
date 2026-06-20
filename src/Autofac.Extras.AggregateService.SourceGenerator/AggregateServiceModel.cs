@@ -31,8 +31,8 @@ internal readonly struct AggregateServiceModel : IEquatable<AggregateServiceMode
     /// Whether the interface is an open generic definition.
     /// </param>
     /// <param name="typeParameters">
-    /// The interface's generic type parameter names (empty for non-generic
-    /// interfaces).
+    /// The interface's generic type parameters, with their constraints (empty
+    /// for non-generic interfaces).
     /// </param>
     /// <param name="members">
     /// The members to implement.
@@ -43,7 +43,7 @@ internal readonly struct AggregateServiceModel : IEquatable<AggregateServiceMode
         string interfaceMinimalName,
         string backingClassName,
         bool isOpenGeneric,
-        EquatableArray<string> typeParameters,
+        EquatableArray<TypeParameterModel> typeParameters,
         EquatableArray<MemberModel> members)
     {
         InterfaceFullyQualifiedName = interfaceFullyQualifiedName;
@@ -101,10 +101,10 @@ internal readonly struct AggregateServiceModel : IEquatable<AggregateServiceMode
     }
 
     /// <summary>
-    /// Gets the interface's generic type parameter names (empty for non-generic
-    /// interfaces).
+    /// Gets the interface's generic type parameters, with their constraints
+    /// (empty for non-generic interfaces).
     /// </summary>
-    public EquatableArray<string> TypeParameters
+    public EquatableArray<TypeParameterModel> TypeParameters
     {
         get;
     }

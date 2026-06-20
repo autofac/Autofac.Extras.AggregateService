@@ -125,10 +125,8 @@ public static class GeneratedAggregateServiceRegistry
     /// <see langword="true"/> if a generated implementation was created;
     /// otherwise <see langword="false"/>.
     /// </returns>
-    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Open generic construction is only reached for open generic aggregate services, which are an advanced scenario documented as not fully AOT-safe. Closed aggregate services never hit this path.")]
-    [UnconditionalSuppressMessage("Trimming", "IL2055", Justification = "See IL3050 justification.")]
-    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "See IL3050 justification.")]
-    [UnconditionalSuppressMessage("Trimming", "IL2067", Justification = "The open generic backing type is supplied by the source generator's module initializer with its public constructor intact (the generated class has a single public constructor taking IComponentContext); closed aggregate services never hit this path.")]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The RequiresUnreferencedCode call (CreateFromOpenGenericBacking) is only reached when an open generic backing is registered, which itself only happens for open generic aggregate services. Closed aggregate services - the AOT-supported path - never reach it.")]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "The RequiresDynamicCode call (CreateFromOpenGenericBacking) is only reached for open generic aggregate services. Closed aggregate services - the AOT-supported path - never reach it.")]
     internal static bool TryCreate(Type interfaceType, IComponentContext context, [NotNullWhen(true)] out object? instance)
     {
         Func<IComponentContext, object>? factory = null;
@@ -142,20 +140,38 @@ public static class GeneratedAggregateServiceRegistry
             }
         }
 
+        // Closed (non-generic, or already-closed-generic-registered) aggregate services resolve
+        // here through a statically-known factory. This is the common path and is fully
+        // trimming/NativeAOT safe.
         if (factory != null)
         {
             instance = factory(context);
             return true;
         }
 
+        // Open generic aggregate services must construct the closed backing type at runtime,
+        // which is not NativeAOT-compatible (see CreateFromOpenGenericBacking).
         if (openBacking != null)
         {
-            var closedBacking = openBacking.MakeGenericType(interfaceType.GenericTypeArguments);
-            instance = Activator.CreateInstance(closedBacking, context)!;
+            instance = CreateFromOpenGenericBacking(openBacking, interfaceType, context);
             return true;
         }
 
         instance = null;
         return false;
+    }
+
+    // Constructs and instantiates the closed backing type for an open generic aggregate service.
+    // This is inherently NOT trimming/NativeAOT safe: the closed construction is determined at
+    // runtime (MakeGenericType), and its constructor metadata is not statically discoverable, so
+    // under NativeAOT this throws (the generic instantiation / constructor is trimmed away). Open
+    // generic aggregate services are therefore a JIT-only feature - documented as not AOT-safe.
+    // The closed-aggregate path above never calls this, so the common case remains clean.
+    [RequiresUnreferencedCode("Open generic aggregate services construct their closed backing type at runtime and are not compatible with trimming. Register closed aggregate service interfaces for trimming/NativeAOT support.")]
+    [RequiresDynamicCode("Open generic aggregate services use MakeGenericType to construct the closed backing type at runtime and are not compatible with NativeAOT. Register closed aggregate service interfaces for NativeAOT support.")]
+    private static object CreateFromOpenGenericBacking(Type openBacking, Type interfaceType, IComponentContext context)
+    {
+        var closedBacking = openBacking.MakeGenericType(interfaceType.GenericTypeArguments);
+        return Activator.CreateInstance(closedBacking, context)!;
     }
 }

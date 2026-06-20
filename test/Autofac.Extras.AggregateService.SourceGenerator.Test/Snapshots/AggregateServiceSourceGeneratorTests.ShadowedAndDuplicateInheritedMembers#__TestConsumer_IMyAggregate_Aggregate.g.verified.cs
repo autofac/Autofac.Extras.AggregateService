@@ -10,24 +10,24 @@ namespace TestConsumer
     {
         private readonly global::Autofac.IComponentContext __autofacContext;
 
-        private readonly global::TestConsumer.ISecond __Second_value;
-        private readonly global::TestConsumer.IFirst __First_value;
+        private readonly global::TestConsumer.IDep __Shared_value;
+        private readonly global::TestConsumer.IDep __Other_value;
 
         public __TestConsumer_IMyAggregate_Aggregate(global::Autofac.IComponentContext context)
         {
             __autofacContext = context;
-            __Second_value = (global::TestConsumer.ISecond)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.ISecond));
-            __First_value = (global::TestConsumer.IFirst)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IFirst));
+            __Shared_value = (global::TestConsumer.IDep)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IDep));
+            __Other_value = (global::TestConsumer.IDep)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IDep));
         }
 
-        public global::TestConsumer.ISecond Second
+        public global::TestConsumer.IDep Shared
         {
-            get => __Second_value;
+            get => __Shared_value;
         }
 
-        public global::TestConsumer.IFirst First
+        public global::TestConsumer.IDep Other
         {
-            get => __First_value;
+            get => __Other_value;
         }
     }
 }

@@ -255,6 +255,175 @@ public static class Registration
         return Verify(GeneratorTestHarness.Run(source));
     }
 
+    [Fact]
+    public Task GenericMethodConstraints()
+    {
+        var source = Wrap(@"
+public interface IThing<T> { }
+public interface IDep { }
+
+public interface IMyAggregate
+{
+    IThing<T> Get<T>() where T : class, new();
+    IThing<TKey> Multi<TKey, TValue>() where TKey : struct where TValue : IDep;
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService<IMyAggregate>();
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task OpenGenericInterfaceWithConstraint()
+    {
+        var source = Wrap(@"
+public interface IMyAggregate<T>
+    where T : class
+{
+    T Item { get; }
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService(typeof(IMyAggregate<>));
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task MultiArityOpenGenericInterface()
+    {
+        var source = Wrap(@"
+public interface IMyAggregate<TKey, TValue>
+{
+    TKey Key { get; }
+    TValue Value { get; }
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService(typeof(IMyAggregate<,>));
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task InAndParamsParameters()
+    {
+        var source = Wrap(@"
+public interface IMyService { }
+
+public interface IMyAggregate
+{
+    IMyService WithIn(in int value);
+    IMyService WithParams(params int[] values);
+    IMyService WithDefault(int value = 5);
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService<IMyAggregate>();
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task RefAndOutParameters_FallBackToProxy()
+    {
+        // ref/out parameters cannot be faithfully generated, so the generator emits nothing and
+        // reports AGSVC001; the runtime falls back to the dynamic proxy.
+        var source = Wrap(@"
+public interface IMyService { }
+
+public interface IMyAggregate
+{
+    IMyService WithOut(out int value);
+    IMyService WithRef(ref int value);
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService<IMyAggregate>();
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task ShadowedAndDuplicateInheritedMembers()
+    {
+        var source = Wrap(@"
+public interface IDep { }
+
+public interface IBase
+{
+    IDep Shared { get; }
+}
+
+public interface IMyAggregate : IBase
+{
+    new IDep Shared { get; }
+    IDep Other { get; }
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService<IMyAggregate>();
+    }
+}");
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
+    [Fact]
+    public Task NamespacelessInterface()
+    {
+        // An aggregate interface declared in the global namespace exercises the emitter's
+        // no-namespace branch.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+public interface IGlobalService { }
+
+public interface IGlobalAggregate
+{
+    IGlobalService Service { get; }
+}
+
+public static class Registration
+{
+    public static void Configure(ContainerBuilder builder)
+    {
+        builder.RegisterAggregateService<IGlobalAggregate>();
+    }
+}";
+
+        return Verify(GeneratorTestHarness.Run(source));
+    }
+
     /// <summary>
     /// Wraps a snippet in the using directives and namespace shared by all test sources.
     /// </summary>

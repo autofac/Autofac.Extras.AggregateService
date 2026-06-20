@@ -23,4 +23,16 @@ public interface IMyAggregate
     /// The resolved second service.
     /// </returns>
     ISecondService GetSecond();
+
+    /// <summary>
+    /// Resolves the second service while forwarding a parameter (exercises the
+    /// generated TypedParameter path under AOT).
+    /// </summary>
+    /// <param name="seed">
+    /// A parameter forwarded to resolution.
+    /// </param>
+    /// <returns>
+    /// The resolved second service.
+    /// </returns>
+    ISecondService GetSecond(int seed);
 }

@@ -52,6 +52,7 @@ internal static class Emitter
             .Append(typeParameterList)
             .Append(" : ")
             .Append(interfaceRef)
+            .Append(BuildConstraintClauses(model.TypeParameters))
             .AppendLine();
         sb.Append(indent).AppendLine("{");
 
@@ -242,7 +243,9 @@ internal static class Emitter
             .Append(' ')
             .Append(member.Name)
             .Append(genericSuffix)
-            .AppendLine("()");
+            .Append("()")
+            .Append(BuildConstraintClauses(member.TypeParameters))
+            .AppendLine();
         sb.Append(indent).AppendLine("{");
         sb.Append(indent)
             .Append("    return (")
@@ -266,7 +269,9 @@ internal static class Emitter
             .Append(genericSuffix)
             .Append('(')
             .Append(BuildParameterDeclarations(member.Parameters))
-            .AppendLine(")");
+            .Append(')')
+            .Append(BuildConstraintClauses(member.TypeParameters))
+            .AppendLine();
         sb.Append(indent).AppendLine("{");
 
         // Build the TypedParameter array forwarding each argument, mirroring the runtime.
@@ -303,7 +308,9 @@ internal static class Emitter
             .Append(genericSuffix)
             .Append('(')
             .Append(BuildParameterDeclarations(member.Parameters))
-            .AppendLine(")");
+            .Append(')')
+            .Append(BuildConstraintClauses(member.TypeParameters))
+            .AppendLine();
         sb.Append(indent).AppendLine("{");
         sb.Append(indent)
             .AppendLine("    throw new global::System.InvalidOperationException(\"Methods with a void return type are not supported on aggregate services.\");");
@@ -318,28 +325,54 @@ internal static class Emitter
         sb.AppendLine();
     }
 
+    // Uses the property name verbatim (property names are unique within an interface) so the
+    // backing field name cannot collide via case-folding - e.g. distinct properties "Value" and
+    // "value" would otherwise map to the same field. The "__" prefix / "_value" suffix keep it
+    // clear of the property identifiers themselves.
     private static string BackingFieldName(string propertyName)
-        => "__" + char.ToLowerInvariant(propertyName[0]) + propertyName.Substring(1) + "_value";
+        => "__" + propertyName + "_value";
 
-    private static string BuildTypeParameterList(EquatableArray<string> typeParameters)
+    private static string BuildTypeParameterList(EquatableArray<TypeParameterModel> typeParameters)
     {
         if (typeParameters.Count == 0)
         {
             return string.Empty;
         }
 
-        return "<" + string.Join(", ", typeParameters) + ">";
+        var names = new string[typeParameters.Count];
+        for (var i = 0; i < typeParameters.Count; i++)
+        {
+            names[i] = typeParameters[i].Name;
+        }
+
+        return "<" + string.Join(", ", names) + ">";
     }
 
-    private static string BuildMethodTypeParameterList(EquatableArray<string> typeParameters)
+    private static string BuildMethodTypeParameterList(EquatableArray<TypeParameterModel> typeParameters)
         => BuildTypeParameterList(typeParameters);
+
+    // Builds the trailing constraint clauses (" where T : ... where U : ...") for a type
+    // parameter list, or an empty string if none are constrained.
+    private static string BuildConstraintClauses(EquatableArray<TypeParameterModel> typeParameters)
+    {
+        var sb = new StringBuilder();
+        foreach (var typeParameter in typeParameters)
+        {
+            if (!string.IsNullOrEmpty(typeParameter.Constraints))
+            {
+                sb.Append(" where ").Append(typeParameter.Name).Append(" : ").Append(typeParameter.Constraints);
+            }
+        }
+
+        return sb.ToString();
+    }
 
     private static string BuildParameterDeclarations(EquatableArray<ParameterModel> parameters)
     {
         var parts = new string[parameters.Count];
         for (var i = 0; i < parameters.Count; i++)
         {
-            parts[i] = parameters[i].Type + " " + parameters[i].Name;
+            parts[i] = parameters[i].Modifier + parameters[i].Type + " " + parameters[i].Name;
         }
 
         return string.Join(", ", parts);
@@ -351,7 +384,7 @@ internal static class Emitter
         // parameters (which share the interface's parameter names).
         if (model.IsOpenGeneric)
         {
-            return model.InterfaceFullyQualifiedName + "<" + string.Join(", ", model.TypeParameters) + ">";
+            return model.InterfaceFullyQualifiedName + BuildTypeParameterList(model.TypeParameters);
         }
 
         return model.InterfaceFullyQualifiedName;

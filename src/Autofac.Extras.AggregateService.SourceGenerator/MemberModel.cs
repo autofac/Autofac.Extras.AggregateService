@@ -25,7 +25,8 @@ internal readonly struct MemberModel : IEquatable<MemberModel>
     /// The method parameters (empty for properties and parameterless methods).
     /// </param>
     /// <param name="typeParameters">
-    /// The generic type parameter names declared by the method (empty if none).
+    /// The generic type parameters declared by the method, with their
+    /// constraints (empty if none).
     /// </param>
     /// <param name="isGenericMethod">
     /// Whether this member is a generic method.
@@ -39,7 +40,7 @@ internal readonly struct MemberModel : IEquatable<MemberModel>
         string name,
         string returnType,
         EquatableArray<ParameterModel> parameters,
-        EquatableArray<string> typeParameters,
+        EquatableArray<TypeParameterModel> typeParameters,
         bool isGenericMethod,
         bool hasSetter = false)
     {
@@ -87,10 +88,10 @@ internal readonly struct MemberModel : IEquatable<MemberModel>
     }
 
     /// <summary>
-    /// Gets the generic type parameter names declared by the method (empty if
-    /// none).
+    /// Gets the generic type parameters declared by the method, with their
+    /// constraints (empty if none).
     /// </summary>
-    public EquatableArray<string> TypeParameters
+    public EquatableArray<TypeParameterModel> TypeParameters
     {
         get;
     }

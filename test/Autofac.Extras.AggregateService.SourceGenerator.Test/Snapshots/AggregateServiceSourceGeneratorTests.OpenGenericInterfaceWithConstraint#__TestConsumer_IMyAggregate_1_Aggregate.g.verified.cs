@@ -6,28 +6,21 @@
 namespace TestConsumer
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Autofac.Extras.AggregateService.SourceGenerator", null)]
-    internal sealed class __TestConsumer_IMyAggregate_1_Aggregate<T> : global::TestConsumer.IMyAggregate<T>
+    internal sealed class __TestConsumer_IMyAggregate_1_Aggregate<T> : global::TestConsumer.IMyAggregate<T> where T : class
     {
         private readonly global::Autofac.IComponentContext __autofacContext;
 
         private readonly T __Item_value;
-        private readonly global::TestConsumer.IThing<T> __Thing_value;
 
         public __TestConsumer_IMyAggregate_1_Aggregate(global::Autofac.IComponentContext context)
         {
             __autofacContext = context;
             __Item_value = (T)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(T));
-            __Thing_value = (global::TestConsumer.IThing<T>)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IThing<T>));
         }
 
         public T Item
         {
             get => __Item_value;
-        }
-
-        public global::TestConsumer.IThing<T> Thing
-        {
-            get => __Thing_value;
         }
     }
 }

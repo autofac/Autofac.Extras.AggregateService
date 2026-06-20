@@ -66,10 +66,7 @@
     <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <!-- TEMPORARY: local ProjectReference to core Autofac's feature/aot-annotations branch to
-         shake out AOT annotation issues. Revert to the PackageReference below before committing.
-         <PackageReference Include="Autofac" Version="9.2.0" /> -->
-    <ProjectReference Include="..\..\..\Autofac\src\Autofac\Autofac.csproj" />
+    <PackageReference Include="Autofac" Version="9.3.0" />
     <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>all</PrivateAssets>

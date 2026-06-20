@@ -1,0 +1,18 @@
+﻿{
+  Diagnostics: [
+    {
+      Location: : (19,8)-(19,56),
+      Message: Aggregate service interface 'TestConsumer.IMyAggregate' contains a member shape the source generator does not support; it will use the Castle DynamicProxy fallback at runtime, which is not trimming/NativeAOT safe,
+      Severity: Info,
+      WarningLevel: 1,
+      Descriptor: {
+        Id: AGSVC001,
+        Title: Aggregate service uses the dynamic proxy fallback,
+        MessageFormat: Aggregate service interface '{0}' contains a member shape the source generator does not support; it will use the Castle DynamicProxy fallback at runtime, which is not trimming/NativeAOT safe,
+        Category: Autofac.Extras.AggregateService.SourceGenerator,
+        DefaultSeverity: Info,
+        IsEnabledByDefault: true
+      }
+    }
+  ]
+}

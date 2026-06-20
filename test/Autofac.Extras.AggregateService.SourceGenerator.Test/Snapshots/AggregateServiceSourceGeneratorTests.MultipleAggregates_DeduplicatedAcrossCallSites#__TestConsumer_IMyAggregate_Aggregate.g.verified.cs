@@ -10,17 +10,17 @@ namespace TestConsumer
     {
         private readonly global::Autofac.IComponentContext __autofacContext;
 
-        private readonly global::TestConsumer.IMyService __myService_value;
+        private readonly global::TestConsumer.IMyService __MyService_value;
 
         public __TestConsumer_IMyAggregate_Aggregate(global::Autofac.IComponentContext context)
         {
             __autofacContext = context;
-            __myService_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
+            __MyService_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
         }
 
         public global::TestConsumer.IMyService MyService
         {
-            get => __myService_value;
+            get => __MyService_value;
         }
     }
 }

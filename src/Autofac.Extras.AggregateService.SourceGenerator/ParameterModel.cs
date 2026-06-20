@@ -17,10 +17,16 @@ internal readonly struct ParameterModel : IEquatable<ParameterModel>
     /// <param name="type">
     /// The fully-qualified parameter type as a C# type expression.
     /// </param>
-    public ParameterModel(string name, string type)
+    /// <param name="modifier">
+    /// The leading parameter modifier including a trailing space (for example
+    /// <c>"ref "</c>, <c>"in "</c>, <c>"out "</c>, <c>"params "</c>), or an empty
+    /// string for a by-value parameter.
+    /// </param>
+    public ParameterModel(string name, string type, string modifier)
     {
         Name = name;
         Type = type;
+        Modifier = modifier;
     }
 
     /// <summary>
@@ -39,12 +45,29 @@ internal readonly struct ParameterModel : IEquatable<ParameterModel>
         get;
     }
 
+    /// <summary>
+    /// Gets the leading parameter modifier including a trailing space (for
+    /// example <c>"ref "</c>, <c>"in "</c>, <c>"out "</c>, <c>"params "</c>), or
+    /// an empty string for a by-value parameter.
+    /// </summary>
+    public string Modifier
+    {
+        get;
+    }
+
     /// <inheritdoc/>
-    public bool Equals(ParameterModel other) => Name == other.Name && Type == other.Type;
+    public bool Equals(ParameterModel other) => Name == other.Name && Type == other.Type && Modifier == other.Modifier;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is ParameterModel other && Equals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => (Name.GetHashCode() * 31) + Type.GetHashCode();
+    public override int GetHashCode()
+    {
+        var hash = 17;
+        hash = (hash * 31) + Name.GetHashCode();
+        hash = (hash * 31) + Type.GetHashCode();
+        hash = (hash * 31) + Modifier.GetHashCode();
+        return hash;
+    }
 }

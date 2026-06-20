@@ -10,24 +10,24 @@ namespace TestConsumer
     {
         private readonly global::Autofac.IComponentContext __autofacContext;
 
-        private readonly global::TestConsumer.IMyService __readOnly_value;
-        private readonly global::TestConsumer.IMyService __withSetter_value;
+        private readonly global::TestConsumer.IMyService __ReadOnly_value;
+        private readonly global::TestConsumer.IMyService __WithSetter_value;
 
         public __TestConsumer_IMyAggregate_Aggregate(global::Autofac.IComponentContext context)
         {
             __autofacContext = context;
-            __readOnly_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
-            __withSetter_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
+            __ReadOnly_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
+            __WithSetter_value = (global::TestConsumer.IMyService)global::Autofac.ResolutionExtensions.Resolve(__autofacContext, typeof(global::TestConsumer.IMyService));
         }
 
         public global::TestConsumer.IMyService ReadOnly
         {
-            get => __readOnly_value;
+            get => __ReadOnly_value;
         }
 
         public global::TestConsumer.IMyService WithSetter
         {
-            get => __withSetter_value;
+            get => __WithSetter_value;
             set => throw new global::System.InvalidOperationException("Property setters are not supported on aggregate services.");
         }
     }

@@ -52,7 +52,7 @@ internal static class ModelBuilder
         }
 
         var isOpenGeneric = definition.IsGenericType;
-        var typeParameterNames = definition.TypeParameters.Select(tp => tp.Name).ToArray();
+        var typeParameters = definition.TypeParameters.Select(BuildTypeParameter).ToArray();
 
         var members = TryCollectMembers(definition);
         if (members is null)
@@ -73,7 +73,7 @@ internal static class ModelBuilder
             interfaceMinimalName: minimalName,
             backingClassName: backingClassName,
             isOpenGeneric: isOpenGeneric,
-            typeParameters: new EquatableArray<string>(typeParameterNames),
+            typeParameters: new EquatableArray<TypeParameterModel>(typeParameters),
             members: new EquatableArray<MemberModel>(members.ToArray()));
     }
 
@@ -85,6 +85,12 @@ internal static class ModelBuilder
     private static List<MemberModel>? TryCollectMembers(INamedTypeSymbol definition)
     {
         var members = new List<MemberModel>();
+
+        // A member can appear more than once across an interface hierarchy (a property shadowed
+        // with 'new', or the same-named member declared on two base interfaces). The runtime
+        // resolves by type and tolerates this, but the generated class would declare duplicate
+        // members (CS0102) / signatures, so de-duplicate by member signature here.
+        var seen = new HashSet<string>(StringComparer.Ordinal);
 
         // GetUniqueInterfaces equivalent: the interface itself plus all inherited interfaces.
         var allInterfaces = new List<INamedTypeSymbol> { definition };
@@ -106,11 +112,40 @@ internal static class ModelBuilder
                     return null;
                 }
 
-                members.Add(memberModel.Value);
+                if (seen.Add(BuildMemberSignature(memberModel.Value)))
+                {
+                    members.Add(memberModel.Value);
+                }
             }
         }
 
         return members;
+    }
+
+    // A signature that uniquely identifies an emitted member: name plus, for methods, arity and
+    // parameter types (so legitimate overloads are kept but shadowed/duplicate declarations are
+    // collapsed). Property names alone are sufficient since C# forbids overloading on them.
+    private static string BuildMemberSignature(MemberModel member)
+    {
+        if (member.Kind == MemberKind.Property)
+        {
+            return "P:" + member.Name;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.Append("M:").Append(member.Name).Append('`').Append(member.TypeParameters.Count).Append('(');
+        for (var i = 0; i < member.Parameters.Count; i++)
+        {
+            if (i > 0)
+            {
+                sb.Append(',');
+            }
+
+            sb.Append(member.Parameters[i].Modifier).Append(member.Parameters[i].Type);
+        }
+
+        sb.Append(')');
+        return sb.ToString();
     }
 
     private static MemberModel? TryBuildMemberSymbol(ISymbol member)
@@ -145,7 +180,7 @@ internal static class ModelBuilder
             property.Name,
             propertyType,
             new EquatableArray<ParameterModel>(Array.Empty<ParameterModel>()),
-            new EquatableArray<string>(Array.Empty<string>()),
+            new EquatableArray<TypeParameterModel>(Array.Empty<TypeParameterModel>()),
             isGenericMethod: false,
             hasSetter: property.SetMethod is not null);
     }
@@ -157,8 +192,20 @@ internal static class ModelBuilder
             return null;
         }
 
+        // ref/out parameters cannot be faithfully generated: an 'out' value has nothing to pass
+        // to resolution (and would be left unassigned), and 'ref' aliasing cannot be honored by
+        // the resolve model. Fall back to the dynamic proxy, which handles ref/out invocation.
+        // ('in' and 'params' are supported - the argument value is available to forward.)
+        foreach (var parameter in method.Parameters)
+        {
+            if (parameter.RefKind is RefKind.Ref or RefKind.Out)
+            {
+                return null;
+            }
+        }
+
         var returnType = method.ReturnType.ToDisplayString(FullyQualifiedFormat);
-        var typeParameters = method.TypeParameters.Select(tp => tp.Name).ToArray();
+        var typeParameters = method.TypeParameters.Select(BuildTypeParameter).ToArray();
 
         // Void methods have no return type to resolve; the runtime throws when they are invoked,
         // so the generated implementation throws too (rather than forcing a whole-interface fallback).
@@ -168,12 +215,8 @@ internal static class ModelBuilder
                 MemberKind.ThrowingVoidMethod,
                 method.Name,
                 "void",
-                new EquatableArray<ParameterModel>(
-                    method.Parameters
-                        .OrderBy(p => p.Ordinal)
-                        .Select(p => new ParameterModel(p.Name, p.Type.ToDisplayString(FullyQualifiedFormat)))
-                        .ToArray()),
-                new EquatableArray<string>(typeParameters),
+                new EquatableArray<ParameterModel>(BuildParameters(method)),
+                new EquatableArray<TypeParameterModel>(typeParameters),
                 isGenericMethod: method.IsGenericMethod);
         }
 
@@ -184,22 +227,80 @@ internal static class ModelBuilder
                 method.Name,
                 returnType,
                 new EquatableArray<ParameterModel>(Array.Empty<ParameterModel>()),
-                new EquatableArray<string>(typeParameters),
+                new EquatableArray<TypeParameterModel>(typeParameters),
                 isGenericMethod: method.IsGenericMethod);
         }
-
-        var parameters = method.Parameters
-            .OrderBy(p => p.Ordinal)
-            .Select(p => new ParameterModel(p.Name, p.Type.ToDisplayString(FullyQualifiedFormat)))
-            .ToArray();
 
         return new MemberModel(
             MemberKind.MethodWithParameters,
             method.Name,
             returnType,
-            new EquatableArray<ParameterModel>(parameters),
-            new EquatableArray<string>(typeParameters),
+            new EquatableArray<ParameterModel>(BuildParameters(method)),
+            new EquatableArray<TypeParameterModel>(typeParameters),
             isGenericMethod: method.IsGenericMethod);
+    }
+
+    private static ParameterModel[] BuildParameters(IMethodSymbol method)
+        => method.Parameters
+            .OrderBy(p => p.Ordinal)
+            .Select(p => new ParameterModel(
+                p.Name,
+                p.Type.ToDisplayString(FullyQualifiedFormat),
+                BuildParameterModifier(p)))
+            .ToArray();
+
+    private static string BuildParameterModifier(IParameterSymbol parameter)
+    {
+        if (parameter.IsParams)
+        {
+            return "params ";
+        }
+
+        return parameter.RefKind switch
+        {
+            RefKind.Ref => "ref ",
+            RefKind.Out => "out ",
+            RefKind.In => "in ",
+            _ => string.Empty,
+        };
+    }
+
+    private static TypeParameterModel BuildTypeParameter(ITypeParameterSymbol typeParameter)
+        => new TypeParameterModel(typeParameter.Name, BuildConstraintClause(typeParameter));
+
+    // Builds the comma-separated constraint list (the text after "where T :") in the exact order
+    // C# requires: class/struct/notnull/unmanaged first, then base/interface constraints, then
+    // new() last. An empty result means the type parameter is unconstrained.
+    private static string BuildConstraintClause(ITypeParameterSymbol typeParameter)
+    {
+        var constraints = new List<string>();
+
+        if (typeParameter.HasReferenceTypeConstraint)
+        {
+            constraints.Add("class");
+        }
+        else if (typeParameter.HasValueTypeConstraint)
+        {
+            constraints.Add(typeParameter.HasUnmanagedTypeConstraint ? "unmanaged" : "struct");
+        }
+        else if (typeParameter.HasNotNullConstraint)
+        {
+            constraints.Add("notnull");
+        }
+
+        foreach (var constraintType in typeParameter.ConstraintTypes)
+        {
+            constraints.Add(constraintType.ToDisplayString(FullyQualifiedFormat));
+        }
+
+        // The parameterless-constructor constraint must come last and is not combinable with the
+        // struct/unmanaged constraints (which already imply it).
+        if (typeParameter.HasConstructorConstraint && !typeParameter.HasValueTypeConstraint)
+        {
+            constraints.Add("new()");
+        }
+
+        return string.Join(", ", constraints);
     }
 
     private static string BuildMinimalName(INamedTypeSymbol definition)
