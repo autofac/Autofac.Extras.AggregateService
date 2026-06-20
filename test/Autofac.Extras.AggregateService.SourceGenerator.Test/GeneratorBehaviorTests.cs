@@ -279,6 +279,140 @@ namespace TestConsumer
     }
 
     [Fact]
+    public void InterfaceWithNestedTypeMemberIsNotGenerated()
+    {
+        // A nested type is a member shape that is neither a property nor a method, so the
+        // interface is unsupported and falls back to the dynamic proxy.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public interface IMyAggregate
+    {
+        IDep Dep { get; }
+
+        public enum Mode
+        {
+            One,
+        }
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+        Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
+    }
+
+    [Fact]
+    public void InterfaceWithIndexerIsNotGenerated()
+    {
+        // An indexer can't be resolved as a single service; the interface falls back to the proxy.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public interface IMyAggregate
+    {
+        IDep this[int index] { get; }
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+        Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
+    }
+
+    [Fact]
+    public void InterfaceWithWriteOnlyPropertyIsNotGenerated()
+    {
+        // A write-only property has nothing to resolve eagerly; the interface falls back.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IDep { }
+
+    public interface IMyAggregate
+    {
+        IDep WriteOnly { set; }
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        Assert.Empty(result.GeneratedTrees);
+        Assert.Single(result.Diagnostics, d => d.Id == "AGSVC001");
+    }
+
+    [Fact]
+    public void NotNullConstraintIsGenerated()
+    {
+        // Exercises the 'notnull' generic constraint emission.
+        var source = @"using Autofac;
+using Autofac.Extras.AggregateService;
+
+namespace TestConsumer
+{
+    public interface IThing<T> { }
+
+    public interface IMyAggregate
+    {
+        IThing<T> Get<T>() where T : notnull;
+    }
+
+    public static class Registration
+    {
+        public static void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterAggregateService<IMyAggregate>();
+        }
+    }
+}";
+
+        var driver = GeneratorTestHarness.Run(source);
+        var result = driver.GetRunResult();
+
+        var tree = Assert.Single(result.GeneratedTrees, t => t.FilePath.Contains("IMyAggregate", StringComparison.Ordinal));
+        Assert.Contains("where T : notnull", tree.GetText().ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void NullConditionalInvocationIsDiscovered()
     {
         // A null-conditional registration call (builder?.RegisterAggregateService<T>()) uses a

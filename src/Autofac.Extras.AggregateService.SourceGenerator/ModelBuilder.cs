@@ -256,13 +256,10 @@ internal static class ModelBuilder
             return "params ";
         }
 
-        return parameter.RefKind switch
-        {
-            RefKind.Ref => "ref ",
-            RefKind.Out => "out ",
-            RefKind.In => "in ",
-            _ => string.Empty,
-        };
+        // ref/out parameters never reach here: TryBuildMethod returns null for any method that
+        // has one, routing the whole interface to the dynamic proxy fallback. Only 'in' (and
+        // plain by-value) parameters are generated.
+        return parameter.RefKind == RefKind.In ? "in " : string.Empty;
     }
 
     private static TypeParameterModel BuildTypeParameter(ITypeParameterSymbol typeParameter)
