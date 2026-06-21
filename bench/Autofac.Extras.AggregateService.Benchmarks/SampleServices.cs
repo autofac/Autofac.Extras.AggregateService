@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Autofac.Extras.AggregateService.Bench;
+namespace Autofac.Extras.AggregateService.Benchmarks;
 
 // Leaf dependencies the aggregate services pull together.
 public interface IServiceA
@@ -50,9 +50,10 @@ public sealed class ServiceC : IServiceC
     public int Number => _number;
 }
 
-// The aggregate service shape used by both the generated and the Castle benchmarks.
-// Two identically-shaped interfaces are used so the registry can hold a generated
-// implementation for one while the other falls back to the dynamic proxy.
+// The aggregate service shape exercised by the benchmarks. Two identically-shaped interfaces
+// let one be driven down the source-generated path (registered with a statically-visible
+// RegisterAggregateService<T>(), so the generator emits a backing class) and the other down the
+// Castle DynamicProxy fallback (registered via a runtime-obtained Type the generator can't see).
 public interface IGeneratedAggregate
 {
     IServiceA ServiceA
@@ -70,7 +71,7 @@ public interface IGeneratedAggregate
     IServiceC GetServiceC(int number);
 }
 
-public interface ICastleAggregate
+public interface IProxiedAggregate
 {
     IServiceA ServiceA
     {
@@ -87,7 +88,7 @@ public interface ICastleAggregate
     IServiceC GetServiceC(int number);
 }
 
-// Open generic aggregate shapes, again paired so one can be generated and one proxied.
+// Open generic aggregate shapes, again paired so one is generated and one proxied.
 public interface IGeneratedOpenAggregate<T>
 {
     T Item
@@ -96,7 +97,7 @@ public interface IGeneratedOpenAggregate<T>
     }
 }
 
-public interface ICastleOpenAggregate<T>
+public interface IProxiedOpenAggregate<T>
 {
     T Item
     {

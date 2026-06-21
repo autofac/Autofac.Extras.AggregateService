@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Globalization;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 
-namespace Autofac.Extras.AggregateService.Bench;
+namespace Autofac.Extras.AggregateService.Benchmarks;
 
 internal sealed class BenchmarkConfig : ManualConfig
 {
@@ -14,8 +15,8 @@ internal sealed class BenchmarkConfig : ManualConfig
     {
         Add(DefaultConfig.Instance);
 
-        var rootFolder = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf("bin", StringComparison.OrdinalIgnoreCase));
-        var runFolder = DateTime.Now.ToString("u").Replace(' ', '_').Replace(':', '-');
+        var rootFolder = AppContext.BaseDirectory;
+        var runFolder = DateTime.UtcNow.ToString("dd-MM-yyyy_hh-MM-ss", CultureInfo.InvariantCulture);
         ArtifactsPath = Path.Combine(rootFolder, BenchmarkArtifactsFolder, runFolder);
 
         AddDiagnoser(MemoryDiagnoser.Default);
