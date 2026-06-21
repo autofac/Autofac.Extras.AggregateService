@@ -34,6 +34,33 @@ public class AggregateServiceBenchmark
         builder.RegisterAggregateService(HideFromGenerator(typeof(IProxiedOpenAggregate<>)));
 
         _container = builder.Build();
+
+        VerifyPathsAreDistinct();
+    }
+
+    // Guards the premise of the comparison: the "Generated" aggregate must resolve to a
+    // source-generated backing class (a real type in this assembly) and the "Proxied" aggregate
+    // must resolve to a Castle dynamic proxy (a runtime-emitted type in a dynamic assembly). If
+    // the generator ever started tracing HideFromGenerator, both would be generated and the
+    // benchmark would silently compare identical paths - so fail loudly instead.
+    private void VerifyPathsAreDistinct()
+    {
+        var generatedType = _container.Resolve<IGeneratedAggregate>().GetType();
+        var proxiedType = _container.Resolve<IProxiedAggregate>().GetType();
+
+        var thisAssembly = typeof(AggregateServiceBenchmark).Assembly;
+
+        if (generatedType.Assembly != thisAssembly)
+        {
+            throw new InvalidOperationException(
+                $"Expected '{nameof(IGeneratedAggregate)}' to resolve to a source-generated backing in this assembly, but got '{generatedType}' in '{generatedType.Assembly.GetName().Name}'.");
+        }
+
+        if (proxiedType.Assembly == thisAssembly)
+        {
+            throw new InvalidOperationException(
+                $"Expected '{nameof(IProxiedAggregate)}' to resolve via the Castle dynamic proxy fallback, but it resolved to '{proxiedType}' in this assembly - the source generator may now be tracing HideFromGenerator, collapsing the benchmark comparison.");
+        }
     }
 
     [GlobalCleanup]

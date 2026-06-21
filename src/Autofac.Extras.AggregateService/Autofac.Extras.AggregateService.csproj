@@ -93,11 +93,20 @@
   <!--
     Pack the generator assembly into the package's analyzers/dotnet/cs folder so
     consumers get source generation automatically just by referencing this
-    single package.
+    single package. The generator's built path is resolved from the project
+    reference itself (via GetTargetPath) rather than hard-coded, so it stays
+    correct regardless of configuration or output-path customization, and the
+    build fails loudly if the assembly is missing instead of packing nothing.
   -->
   <Target Name="IncludeSourceGeneratorInPackage" BeforeTargets="_GetPackageFiles">
+    <MSBuild Projects="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
+             Targets="GetTargetPath">
+      <Output TaskParameter="TargetOutputs" ItemName="_SourceGeneratorAssembly" />
+    </MSBuild>
+    <Error Condition="'@(_SourceGeneratorAssembly)' == '' or !Exists('%(_SourceGeneratorAssembly.Identity)')"
+           Text="The source generator assembly was not found at '@(_SourceGeneratorAssembly)'. Build the solution before packing so the generator is packed into analyzers/dotnet/cs." />
     <ItemGroup>
-      <None Include="..\Autofac.Extras.AggregateService.SourceGenerator\bin\$(Configuration)\netstandard2.0\Autofac.Extras.AggregateService.SourceGenerator.dll"
+      <None Include="@(_SourceGeneratorAssembly)"
             Pack="true"
             PackagePath="analyzers/dotnet/cs"
             Visible="false" />
