@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <!-- Benchmark sample/backing types are deliberately grouped per concern, so relax the
+         one-type-per-file, file-name, and array-property analyzers for this project. -->
+    <NoWarn>$(NoWarn);CS1591;SA1402;SA1649;CA1819</NoWarn>
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <PlatformTarget>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>../../build/Test.ruleset</CodeAnalysisRuleSet>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
+    <!-- Default to benchmarking the local source. Set UseProjectReference=false together with
+         BaselinePackageVersion to benchmark a published package instead. -->
+    <UseProjectReference Condition="'$(UseProjectReference)' == ''">true</UseProjectReference>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="BenchmarkDotNet.Attributes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="BenchmarkDotNet.Artifacts\**" />
+    <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
+    <None Remove="BenchmarkDotNet.Artifacts\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <!-- Benchmark the local source (the project plus its source generator) by default. -->
+  <ItemGroup Condition="'$(UseProjectReference)' == 'true'">
+    <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj" />
+    <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <!-- Benchmark a published package version instead (the generator ships inside the package). -->
+  <ItemGroup Condition="'$(UseProjectReference)' != 'true' and '$(BaselinePackageVersion)' != ''">
+    <PackageReference Include="Autofac.Extras.AggregateService" Version="$(BaselinePackageVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\build\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+</Project>

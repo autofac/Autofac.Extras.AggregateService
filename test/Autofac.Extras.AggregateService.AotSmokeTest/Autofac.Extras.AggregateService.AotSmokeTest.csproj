@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <NoWarn>$(NoWarn);CS1591;IL2104;IL3053</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>../../build/Test.ruleset</CodeAnalysisRuleSet>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!--
+      This app exists to prove the source-generated aggregate service path is
+      trimming and NativeAOT safe. PublishAot performs the real native compile
+      in CI; the IsAotCompatible analyzers run during an ordinary build so the
+      trim/AOT warnings are surfaced even where the native toolchain is
+      unavailable. Warnings are treated as errors so any regression in
+      AOT-safety fails the build.
+
+      IL2104 / IL3053 are whole-assembly *rollup* warnings reported against the
+      Castle.Core dependency (the dynamic proxy fallback, which is inherently not
+      AOT-safe) and System.Private.CoreLib. They are unavoidable for any consumer
+      that references this package and cannot be fixed here, so they are excluded.
+      Crucially, per-call-site warnings from OUR code (IL2026/IL3050/IL2070/etc.,
+      which carry a file and line) are NOT excluded - a regression in the
+      generated/runtime code still fails the build with a specific, actionable
+      diagnostic.
+    -->
+    <PublishAot>true</PublishAot>
+    <IsAotCompatible>true</IsAotCompatible>
+    <TrimMode>full</TrimMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj" />
+    <!--
+      The generator must run against this app so the aggregate service gets a
+      generated, AOT-safe backing implementation instead of the dynamic proxy
+      fallback.
+    -->
+    <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.27.0.140913">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

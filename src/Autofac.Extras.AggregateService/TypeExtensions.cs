@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Autofac.Extras.AggregateService;
@@ -20,16 +21,12 @@ internal static class TypeExtensions
     /// <returns>
     /// A list of unique interfaces implemented by the provided type.
     /// </returns>
+    [RequiresUnreferencedCode("Reflects over the type's interfaces. Only used by the dynamic proxy fallback path.")]
     public static IEnumerable<Type> GetUniqueInterfaces(this Type type)
     {
         var types = new HashSet<Type>();
         foreach (var interfaceType in type.GetInterfaces())
         {
-            if (types.Contains(interfaceType))
-            {
-                continue;
-            }
-
             types.Add(interfaceType);
         }
 

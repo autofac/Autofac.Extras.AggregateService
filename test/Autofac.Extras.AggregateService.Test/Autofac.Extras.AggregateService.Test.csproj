@@ -20,6 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService\Autofac.Extras.AggregateService.csproj" />
+    <!-- Reference the generator as an analyzer so the test project exercises the generated path
+         exactly as a real package consumer would (a ProjectReference does not transitively flow
+         analyzers; the NuGet analyzers/dotnet/cs folder does that for package consumers). -->
+    <ProjectReference Include="..\..\src\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />

@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Assembly metadata -->
+    <AssemblyName>Autofac.Extras.AggregateService.SourceGenerator</AssemblyName>
+    <AssemblyTitle>Autofac.Extras.AggregateService.SourceGenerator</AssemblyTitle>
+    <Description>C# source generator that emits aggregate service implementations for Autofac.Extras.AggregateService.</Description>
+    <Copyright>Copyright © 2015 Autofac Contributors</Copyright>
+    <Authors>Autofac Contributors</Authors>
+    <Company>Autofac</Company>
+    <Product>Autofac</Product>
+    <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <!-- Frameworks and language features -->
+    <!--
+      Source generators must target netstandard2.0 - that is the framework the
+      Roslyn compiler host loads analyzers as.
+    -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>../../build/Source.ruleset</CodeAnalysisRuleSet>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Packaging -->
+    <!--
+      This is an analyzer; it is never referenced as a runtime library and is
+      not packed as a normal lib. The runtime package picks up its output and
+      packs it under analyzers/dotnet/cs.
+    -->
+    <IsPackable>false</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+  <!-- Disable nullability warnings in netstandard2.0 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!--
+      RS2008: analyzer release tracking is for shipping rule catalogs; this
+      generator's one informational diagnostic does not warrant the AnalyzerReleases
+      tracking files.
+    -->
+    <NoWarn>$(NoWarn);8600;8601;8602;8603;8604;RS2008</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      This version sets the minimum Roslyn (compiler/SDK) a consumer needs in
+      order to run the generator. Consumers on older compilers simply do not run
+      it and fall back to the Castle DynamicProxy path, so a newer version
+      degrades safely rather than breaking.
+
+      If you change the Microsoft.CodeAnalysis.CSharp version, update the test
+      project reference to match.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.14.0]">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.27.0.140913">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
