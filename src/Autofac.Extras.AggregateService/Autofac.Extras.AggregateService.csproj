@@ -66,12 +66,12 @@
     <AdditionalFiles Include="../../build/stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="9.3.0" />
+    <PackageReference Include="Autofac" Version="9.3.1" />
     <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.27.0.140913">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.28.0.143324">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -86,9 +86,7 @@
     Microsoft.CodeAnalysis off this library's reference and runtime closure.
   -->
   <ItemGroup>
-    <ProjectReference Include="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <!--
     Pack the generator assembly into the package's analyzers/dotnet/cs folder so
@@ -99,17 +97,12 @@
     build fails loudly if the assembly is missing instead of packing nothing.
   -->
   <Target Name="IncludeSourceGeneratorInPackage" BeforeTargets="_GetPackageFiles">
-    <MSBuild Projects="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj"
-             Targets="GetTargetPath">
+    <MSBuild Projects="..\Autofac.Extras.AggregateService.SourceGenerator\Autofac.Extras.AggregateService.SourceGenerator.csproj" Targets="GetTargetPath">
       <Output TaskParameter="TargetOutputs" ItemName="_SourceGeneratorAssembly" />
     </MSBuild>
-    <Error Condition="'@(_SourceGeneratorAssembly)' == '' or !Exists('%(_SourceGeneratorAssembly.Identity)')"
-           Text="The source generator assembly was not found at '@(_SourceGeneratorAssembly)'. Build the solution before packing so the generator is packed into analyzers/dotnet/cs." />
+    <Error Condition="'@(_SourceGeneratorAssembly)' == '' or !Exists('%(_SourceGeneratorAssembly.Identity)')" Text="The source generator assembly was not found at '@(_SourceGeneratorAssembly)'. Build the solution before packing so the generator is packed into analyzers/dotnet/cs." />
     <ItemGroup>
-      <None Include="@(_SourceGeneratorAssembly)"
-            Pack="true"
-            PackagePath="analyzers/dotnet/cs"
-            Visible="false" />
+      <None Include="@(_SourceGeneratorAssembly)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
   </Target>
   <ItemDefinitionGroup>
